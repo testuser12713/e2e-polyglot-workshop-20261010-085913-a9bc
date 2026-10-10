@@ -1,0 +1,12 @@
+# Root dependency manifest for the worker service.
+#
+# RUN.json declares the worker service with "dir": "." (it is started from the
+# repository root as `python -m worker.main`, so the module file worker/queue.py
+# never shadows the standard library's `queue` module on sys.path). A clean
+# install that reads the manifest at the service's declared directory therefore
+# looks here, next to the worker's own worker/requirements.txt.
+#
+# Keep the bounds in sync with worker/requirements.txt.
+psycopg[binary]>=3.2,<4
+redis>=6.4,<9
+pytest>=8,<10
