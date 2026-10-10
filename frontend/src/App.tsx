@@ -5,6 +5,7 @@ import { AppointmentPage } from './pages/AppointmentPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { DatenschutzPage } from './pages/DatenschutzPage';
 import { ImpressumPage } from './pages/ImpressumPage';
+import { HomePage } from './pages/HomePage';
 import { InvoicePage } from './pages/InvoicePage';
 import { LoginPage } from './pages/LoginPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -25,7 +26,8 @@ export function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<AppointmentPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/termin" element={<AppointmentPage />} />
         <Route path="/status" element={<StatusPage />} />
         <Route path="/rechnung" element={<InvoicePage />} />
         <Route path="/impressum" element={<ImpressumPage />} />

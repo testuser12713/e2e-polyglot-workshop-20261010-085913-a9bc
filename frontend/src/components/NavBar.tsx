@@ -9,7 +9,7 @@ interface NavItem {
 }
 
 const PUBLIC_LINKS: NavItem[] = [
-  { to: '/', label: 'Termin', end: true },
+  { to: '/termin', label: 'Termin' },
   { to: '/status', label: 'Status' },
   { to: '/rechnung', label: 'Rechnung' },
 ];
