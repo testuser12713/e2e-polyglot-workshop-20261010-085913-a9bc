@@ -10,13 +10,10 @@ import (
 	"workshop-api/internal/model"
 )
 
-// ErrOrderNotFound is returned by OrderDetail when no order carries the given
-// number. The HTTP layer maps it to a 404 not_found response.
-var ErrOrderNotFound = errors.New("order_not_found")
-
 // OrderDetail returns the full order (customer, vehicle, positions, status
 // history and subtotal) for the workshop detail view. An unknown order number
-// yields ErrOrderNotFound.
+// yields ErrOrderNotFound (declared with the status-transition sentinels in
+// order_status.go).
 func (s *Store) OrderDetail(ctx context.Context, orderNumber string) (model.OrderDetail, error) {
 	var (
 		detail    model.OrderDetail
