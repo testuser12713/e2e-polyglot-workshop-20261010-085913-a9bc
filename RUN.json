@@ -138,7 +138,6 @@
           "-m",
           "pip",
           "install",
-          "-q",
           "-r",
           "worker/requirements.txt"
         ]
@@ -161,7 +160,8 @@
           "dev": "${service:queue.url}"
         },
         "HOURLY_RATE_CENTS": {
-          "dev": "8500"
+          "external": true,
+          "degraded_without": "Labour positions without a stored rate snapshot are billed at 0 cents per hour; invoices whose positions carry an explicit unit price are unaffected."
         }
       },
       "test": [
@@ -169,6 +169,7 @@
           "${python}",
           "-m",
           "pytest",
+          "worker/tests",
           "-q"
         ]
       ]
