@@ -6,6 +6,7 @@ uniquely named stream so tests cannot interfere with each other or with the
 product stream.
 """
 
+import time
 from collections.abc import Iterator
 from typing import Any
 from uuid import uuid4
@@ -128,3 +129,32 @@ def test_dead_letter_stream_is_not_the_product_stream() -> None:
     from worker.queue import INVOICE_DEAD_LETTER_STREAM
 
     assert INVOICE_DEAD_LETTER_STREAM == "workshop:invoices:dead"
+
+
+def test_idle_blocking_read_returns_instead_of_timing_out(valkey_url: str) -> None:
+    """An idle consume loop must survive its blocking read.
+
+    The client's socket timeout used to be redis-py's 5s default, so a blocking
+    ``XREADGROUP`` with the default 5000ms block raised ``TimeoutError`` on an
+    empty stream and killed the worker. The socket timeout is now above the
+    block time, so the read returns empty after blocking.
+    """
+    suffix = uuid4().hex
+    stream = f"test:idle:{suffix}"
+    dead_letter_stream = f"{stream}:dead"
+    idle = Queue(
+        valkey_url,
+        stream=stream,
+        group=GROUP,
+        consumer="consumer-idle",
+        dead_letter_stream=dead_letter_stream,
+        claim_min_idle_ms=0,
+        read_block_ms=5000,
+    )
+    idle.ensure_group()
+    try:
+        started = time.monotonic()
+        assert idle.read_new(block_ms=5000) == []
+        assert time.monotonic() - started >= 4.0
+    finally:
+        _drop(idle, stream, dead_letter_stream)
