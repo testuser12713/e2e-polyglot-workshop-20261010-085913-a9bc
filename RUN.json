@@ -7,14 +7,124 @@
       "stack": "web-vite",
       "kind": "static",
       "serve_dir": "dist",
-      "install": [["npm", "ci"]],
-      "build": [["npm", "run", "build"]],
-      "test": [["npm", "test"]],
-      "start": ["npm", "run", "dev", "--", "--host"],
+      "install": [
+        [
+          "npm",
+          "ci"
+        ]
+      ],
+      "build": [
+        [
+          "npm",
+          "run",
+          "build"
+        ]
+      ],
+      "test": [
+        [
+          "npm",
+          "test"
+        ]
+      ],
+      "start": [
+        "npm",
+        "run",
+        "dev",
+        "--",
+        "--host"
+      ],
       "port": 5173,
       "port_env": "PORT",
       "env": {
-        "VITE_API_BASE_URL": { "dev": "${service:api.origin}" }
+        "VITE_API_BASE_URL": {
+          "dev": "${service:api.origin}"
+        }
+      }
+    },
+    {
+      "name": "db",
+      "kind": "database",
+      "engine": "postgres"
+    },
+    {
+      "name": "queue",
+      "kind": "database",
+      "engine": "valkey"
+    },
+    {
+      "name": "api",
+      "dir": "backend",
+      "stack": "go",
+      "kind": "server",
+      "install": [
+        [
+          "go",
+          "mod",
+          "download"
+        ]
+      ],
+      "build": [
+        [
+          "go",
+          "build",
+          "./..."
+        ]
+      ],
+      "test": [
+        [
+          "go",
+          "test",
+          "./..."
+        ]
+      ],
+      "start": [
+        "go",
+        "run",
+        "./cmd/api"
+      ],
+      "port": 8000,
+      "port_env": "PORT",
+      "health": {
+        "path": "/api/health",
+        "expect_status": [
+          200
+        ]
+      },
+      "depends_on": [
+        "db",
+        "queue"
+      ],
+      "env": {
+        "DATABASE_URL": {
+          "dev": "${service:db.url}"
+        },
+        "VALKEY_URL": {
+          "dev": "${service:queue.url}"
+        },
+        "HOURLY_RATE_CENTS": {
+          "dev": "9000"
+        },
+        "WORKSHOP_EMPLOYEE_EMAIL": {
+          "dev": "chef@werkstatt.example",
+          "not_secret": true,
+          "why": "Public login identifier of the seeded employee, not a credential; the password is generated separately."
+        },
+        "WORKSHOP_EMPLOYEE_PASSWORD": {
+          "generate": "hex",
+          "bytes": 16
+        },
+        "AUTH_TOKEN_SECRET": {
+          "generate": "hex",
+          "bytes": 32
+        },
+        "AUTH_TOKEN_TTL_MINUTES": {
+          "dev": "480",
+          "not_secret": true,
+          "why": "Lifetime of an issued token in minutes, a plain duration, not the signing secret."
+        },
+        "FRONTEND_ORIGIN": {
+          "dev": "${service:web.origin}"
+        }
       }
     }
   ]
