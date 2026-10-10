@@ -71,3 +71,10 @@ def test_postgres_and_valkey_are_reachable(
         cur.execute("SELECT 1")
         assert cur.fetchone() == (1,)
     assert valkey.ping() is True
+
+
+def test_schema_applied_creates_shared_tables(schema_applied: psycopg.Connection) -> None:
+    """The session-scoped schema fixture applies the shared migration once."""
+    with schema_applied.cursor() as cur:
+        cur.execute("SELECT to_regclass('public.customers')")
+        assert cur.fetchone()[0] is not None

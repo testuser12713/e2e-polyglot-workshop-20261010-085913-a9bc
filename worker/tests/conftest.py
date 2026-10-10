@@ -51,16 +51,21 @@ def valkey(valkey_url: str) -> redis.Redis:
 
 
 @pytest.fixture(scope="session")
-def schema_applied(postgres_connection: psycopg.Connection) -> psycopg.Connection:
-    """Apply the shared schema migration to the real database.
+def schema_applied(database_url: str) -> psycopg.Connection:
+    """Apply the shared schema migration to the real database once per session.
 
-    Worker tests that need tables request this fixture. The migration file is
-    owned by the API skeleton; if it is not present on the branch yet, the test
-    is skipped rather than falling back to an in-memory schema.
+    Worker tests that need tables request this fixture. It opens its own
+    session-scoped connection so it does not depend on the function-scoped
+    ``postgres_connection`` fixture (which would be a pytest ScopeMismatch). The
+    migration file is owned by the API skeleton; if it is not present on the
+    branch yet, the test is skipped rather than falling back to an in-memory
+    schema.
     """
     if not MIGRATION_FILE.exists():
         pytest.skip(f"schema migration {MIGRATION_FILE} is not present on this branch")
-    with postgres_connection.cursor() as cur:
+    conn = psycopg.connect(database_url)
+    with conn.cursor() as cur:
         cur.execute(MIGRATION_FILE.read_text(encoding="utf-8"))
-    postgres_connection.commit()
-    return postgres_connection
+    conn.commit()
+    yield conn
+    conn.close()

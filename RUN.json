@@ -139,9 +139,8 @@
           "pip",
           "install",
           "-q",
-          "psycopg[binary]>=3.2,<4",
-          "redis>=6.4,<9",
-          "pytest>=8,<10"
+          "-r",
+          "worker/requirements.txt"
         ]
       ],
       "start": [
