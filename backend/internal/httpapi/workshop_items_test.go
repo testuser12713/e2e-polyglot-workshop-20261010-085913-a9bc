@@ -38,6 +38,8 @@ func newItemsTestEnv(t *testing.T) (*pgxpool.Pool, http.Handler) {
 	}
 
 	ctx := context.Background()
+	t.Setenv("AUTH_TOKEN_SECRET", testAuthSecret)
+
 	pool, err := pgxpool.New(ctx, url)
 	if err != nil {
 		t.Fatalf("connect to PostgreSQL: %v", err)
@@ -100,7 +102,7 @@ func doItemRequest(t *testing.T, router http.Handler, method, path, body string)
 	if body != "" {
 		req.Header.Set("Content-Type", "application/json")
 	}
-	req = req.WithContext(WithEmployee(req.Context(), model.Employee{ID: 1, Email: "werkstatt@example.test"}))
+	req.Header.Set("Authorization", "Bearer "+signTestToken(t, testAuthSecret, 1, time.Now().Add(time.Hour)))
 
 	rec := httptest.NewRecorder()
 	router.ServeHTTP(rec, req)
