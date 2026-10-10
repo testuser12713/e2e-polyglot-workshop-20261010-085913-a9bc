@@ -841,3 +841,37 @@ a {
     font-weight: 500;
   }
 }
+
+/* Login */
+.login-wrap {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.login-head {
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+
+.login-head__sub {
+  margin-top: var(--space-0);
+  color: var(--color-muted);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.login-form__submit {
+  margin-top: var(--space-1);
+}
+
+.login-note {
+  margin-top: var(--space-3);
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 12px;
+}
