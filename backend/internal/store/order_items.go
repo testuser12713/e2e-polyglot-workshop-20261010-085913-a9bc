@@ -10,10 +10,9 @@ import (
 )
 
 // Sentinel errors of the order item store. The HTTP layer maps them to the
-// shared error envelope: unknown order or item -> 404, a collected order -> 409.
+// shared error envelope: unknown order (ErrOrderNotFound, declared with the
+// status transitions) or item -> 404, a collected order -> 409.
 var (
-	// ErrOrderNotFound means no workshop order carries the given order number.
-	ErrOrderNotFound = errors.New("order_not_found")
 	// ErrItemNotFound means the order exists but has no position with that id.
 	ErrItemNotFound = errors.New("item_not_found")
 	// ErrOrderLocked means the order is in status "abgeholt" and is read-only.
