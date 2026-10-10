@@ -111,26 +111,30 @@ func TestUnknownRouteReturnsNotFoundEnvelope(t *testing.T) {
 // replace those bodies.
 func TestStubRoutesAreWired(t *testing.T) {
 	router := newTestRouter(t)
+	// notFoundOK marks a single-resource lookup whose implemented handler
+	// legitimately answers 404 for an unknown identifier; such a route is
+	// covered by its own feature test rather than this wiring probe.
 	cases := []struct {
-		method string
-		path   string
+		method     string
+		path       string
+		notFoundOK bool
 	}{
-		{http.MethodPost, "/api/public/appointments"},
-		{http.MethodGet, "/api/public/orders/ABC-1"},
-		{http.MethodGet, "/api/public/orders/ABC-1/invoice"},
-		{http.MethodPost, "/api/workshop/login"},
-		{http.MethodGet, "/api/workshop/orders"},
-		{http.MethodGet, "/api/workshop/orders/ABC-1"},
-		{http.MethodPost, "/api/workshop/orders/ABC-1/items"},
-		{http.MethodPatch, "/api/workshop/orders/ABC-1/items/1"},
-		{http.MethodDelete, "/api/workshop/orders/ABC-1/items/1"},
-		{http.MethodPost, "/api/workshop/orders/ABC-1/status"},
-		{http.MethodGet, "/api/workshop/dashboard"},
+		{http.MethodPost, "/api/public/appointments", false},
+		{http.MethodGet, "/api/public/orders/ABC-1", false},
+		{http.MethodGet, "/api/public/orders/ABC-1/invoice", false},
+		{http.MethodPost, "/api/workshop/login", false},
+		{http.MethodGet, "/api/workshop/orders", false},
+		{http.MethodGet, "/api/workshop/orders/ABC-1", true},
+		{http.MethodPost, "/api/workshop/orders/ABC-1/items", false},
+		{http.MethodPatch, "/api/workshop/orders/ABC-1/items/1", false},
+		{http.MethodDelete, "/api/workshop/orders/ABC-1/items/1", false},
+		{http.MethodPost, "/api/workshop/orders/ABC-1/status", false},
+		{http.MethodGet, "/api/workshop/dashboard", false},
 	}
 	for _, tc := range cases {
 		rec := httptest.NewRecorder()
 		router.ServeHTTP(rec, httptest.NewRequest(tc.method, tc.path, nil))
-		if rec.Code == http.StatusNotFound {
+		if rec.Code == http.StatusNotFound && !tc.notFoundOK {
 			t.Errorf("%s %s returned 404 — route is not wired", tc.method, tc.path)
 		}
 		if rec.Code == http.StatusMethodNotAllowed {
