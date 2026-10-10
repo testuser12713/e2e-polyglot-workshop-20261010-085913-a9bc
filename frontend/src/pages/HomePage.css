@@ -1,0 +1,124 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.home__hero {
+  padding-block: var(--space-5) var(--space-2);
+}
+
+.home__kicker {
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.home__title {
+  font-size: 34px;
+  line-height: 1.2;
+  font-weight: 600;
+  margin-top: var(--space-1);
+  max-width: 20ch;
+}
+
+.home__lead {
+  color: var(--color-muted);
+  font-size: 16px;
+  margin-top: var(--space-2);
+  max-width: 62ch;
+}
+
+.home__actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.home__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+.home__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  box-shadow: 0 1px 2px rgba(22, 33, 46, 0.06);
+  color: var(--color-fg);
+  text-decoration: none;
+}
+
+a.home__card {
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+a.home__card:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 4px 16px rgba(22, 33, 46, 0.08);
+}
+
+.home__icon {
+  color: var(--color-accent);
+}
+
+.home__h3 {
+  font-size: 18px;
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+.home__muted {
+  color: var(--color-muted);
+}
+
+.home__link {
+  margin-top: auto;
+  padding-top: var(--space-2);
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.home__row-between {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+@media (min-width: 640px) {
+  .home__card {
+    padding: var(--space-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .home__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 639px) {
+  .home__title {
+    font-size: 28px;
+  }
+
+  .home__actions {
+    flex-direction: column;
+  }
+
+  .home__actions .btn {
+    width: 100%;
+  }
+}
