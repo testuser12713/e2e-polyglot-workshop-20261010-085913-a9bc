@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aufträge — Werkstattbereich</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Zum Inhalt springen</a>
+
+  <header class="appbar" data-od-id="appbar">
+    <div class="container appbar__inner">
+      <a class="appbar__brand" href="dashboard.html" data-od-id="brand-home">
+        <svg class="appbar__logo" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect width="24" height="24" rx="6" fill="#0F5C99"/>
+          <path d="M7 8l5 9 5-9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span class="appbar__name">Kfz-Meisterbetrieb Vogel <span class="appbar__area">· Werkstatt</span></span>
+      </a>
+      <nav class="appbar__links" aria-label="Werkstattbereich" data-od-id="nav-workshop">
+        <a href="dashboard.html">Dashboard</a>
+        <a class="is-active" href="auftraege.html">Aufträge</a>
+      </nav>
+      <div class="appbar__user">
+        <span class="appbar__email">werkstatt@werkstatt-vogel.de</span>
+        <a class="btn btn-ghost" href="login.html" data-od-id="logout">Abmelden</a>
+      </div>
+      <button class="appbar__menu" type="button" id="menu-open" aria-label="Menü öffnen" aria-expanded="false">Menü</button>
+    </div>
+  </header>
+
+  <div class="menu-sheet" id="menu-sheet" role="dialog" aria-modal="true" aria-label="Navigation">
+    <div class="menu-sheet__head">
+      <span class="h3">Werkstatt</span>
+      <button class="appbar__menu" type="button" id="menu-close" aria-label="Menü schließen">Schließen</button>
+    </div>
+    <nav class="menu-sheet__links">
+      <a href="dashboard.html">Dashboard</a>
+      <a class="is-active" href="auftraege.html">Aufträge</a>
+      <div class="menu-sheet__sep"></div>
+      <a href="login.html">Abmelden</a>
+    </nav>
+  </div>
+
+  <main id="main" class="page" data-od-id="main-content">
+    <div class="container stack">
+
+      <header class="row-between" data-od-id="page-head">
+        <div>
+          <h1 class="h1">Aufträge</h1>
+          <p class="muted" style="margin-top: 4px;"><span id="result-count" class="tnum">6</span> Aufträge · <span id="result-plural">Treffer gesamt</span></p>
+        </div>
+      </header>
+
+      <!-- AC-17: filter by status + substring plate search -->
+      <section class="card" data-od-id="orders-toolbar-card">
+        <div class="toolbar">
+          <div class="field toolbar__filter">
+            <label for="filter-status">Status</label>
+            <select class="input" id="filter-status" data-od-id="filter-status">
+              <option value="">Alle Status</option>
+              <option value="angefragt">angefragt</option>
+              <option value="bestätigt">bestätigt</option>
+              <option value="in Arbeit">in Arbeit</option>
+              <option value="fertig">fertig</option>
+              <option value="abgeholt">abgeholt</option>
+            </select>
+          </div>
+          <div class="field toolbar__search">
+            <label for="search-plate">Suche</label>
+            <div class="search">
+              <svg class="search__lead" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              <input class="input" id="search-plate" type="text" placeholder="Kennzeichen suchen" autocomplete="off" data-od-id="search-plate">
+              <button class="search__clear" type="button" id="search-clear" aria-label="Suche zurücksetzen">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" data-od-id="orders-list-card">
+        <ul class="order-list" id="order-list">
+          <li class="order-row" data-status="angefragt" data-plate="B-AB 1234"><a class="order-row__link" href="auftrag.html" data-od-id="order-row-0187">
+            <span class="order-row__num tnum">AUF-2025-0187</span>
+            <span class="order-row__plate" data-cell="plate">B-AB 1234<span class="order-row__vehicle">VW Golf 8</span></span>
+            <span class="order-row__customer">Anna Schmidt</span>
+            <span class="order-row__date tnum">14.03.2025</span>
+            <span class="order-row__status"><span class="badge badge--requested"><span class="dot"></span>angefragt</span></span>
+            <svg class="order-row__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a></li>
+
+          <li class="order-row" data-status="bestätigt" data-plate="B-EF 9012"><a class="order-row__link" href="auftrag.html" data-od-id="order-row-0188">
+            <span class="order-row__num tnum">AUF-2025-0188</span>
+            <span class="order-row__plate" data-cell="plate">B-EF 9012<span class="order-row__vehicle">Audi A4 Avant</span></span>
+            <span class="order-row__customer">Miriam Krause</span>
+            <span class="order-row__date tnum">17.03.2025</span>
+            <span class="order-row__status"><span class="badge badge--confirmed"><span class="dot"></span>bestätigt</span></span>
+            <svg class="order-row__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a></li>
+
+          <li class="order-row" data-status="fertig" data-plate="B-CD 5678"><a class="order-row__link" href="auftrag.html" data-od-id="order-row-0192">
+            <span class="order-row__num tnum">AUF-2025-0192</span>
+            <span class="order-row__plate" data-cell="plate">B-CD 5678<span class="order-row__vehicle">BMW 320d</span></span>
+            <span class="order-row__customer">Thomas Becker</span>
+            <span class="order-row__date tnum">15.03.2025</span>
+            <span class="order-row__status"><span class="badge badge--done"><span class="dot"></span>fertig</span></span>
+            <svg class="order-row__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a></li>
+
+          <li class="order-row" data-status="angefragt" data-plate="B-GH 3456"><a class="order-row__link" href="auftrag.html" data-od-id="order-row-0195">
+            <span class="order-row__num tnum">AUF-2025-0195</span>
+            <span class="order-row__plate" data-cell="plate">B-GH 3456<span class="order-row__vehicle">Škoda Octavia</span></span>
+            <span class="order-row__customer">Peter Lang</span>
+            <span class="order-row__date tnum">19.03.2025</span>
+            <span class="order-row__status"><span class="badge badge--requested"><span class="dot"></span>angefragt</span></span>
+            <svg class="order-row__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a></li>
+
+          <li class="order-row" data-status="abgeholt" data-plate="B-IJ 7788"><a class="order-row__link" href="auftrag.html" data-od-id="order-row-0176">
+            <span class="order-row__num tnum">AUF-2025-0176</span>
+            <span class="order-row__plate" data-cell="plate">B-IJ 7788<span class="order-row__vehicle">Ford Focus</span></span>
+            <span class="order-row__customer">Sandra Weiß</span>
+            <span class="order-row__date tnum">05.03.2025</span>
+            <span class="order-row__status"><span class="badge badge--picked_up"><span class="dot"></span>abgeholt</span></span>
+            <svg class="order-row__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a></li>
+
+          <li class="order-row" data-status="angefragt" data-plate="B-KL 2233"><a class="order-row__link" href="auftrag.html" data-od-id="order-row-0199">
+            <span class="order-row__num tnum">AUF-2025-0199</span>
+            <span class="order-row__plate" data-cell="plate">B-KL 2233<span class="order-row__vehicle">Mercedes C 200</span></span>
+            <span class="order-row__customer">Jens Hoffmann</span>
+            <span class="order-row__date tnum">21.03.2025</span>
+            <span class="order-row__status"><span class="badge badge--requested"><span class="dot"></span>angefragt</span></span>
+            <svg class="order-row__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a></li>
+        </ul>
+
+        <div id="empty-state" hidden data-od-id="orders-empty">
+          <div class="empty">
+            <svg class="empty__icon" width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <p class="empty__title">Keine Treffer für diesen Filter</p>
+            <p class="empty__body">Ändern Sie den Statusfilter oder die Kennzeichensuche.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="legal-footer" data-od-id="legal-footer">
+    <div class="container legal-footer__inner">
+      <span>© 2025 Kfz-Meisterbetrieb Vogel · Vogelstraße 12, 10115 Berlin</span>
+      <nav class="legal-footer__links" aria-label="Rechtliches">
+        <a href="impressum.html" data-od-id="footer-impressum">Impressum</a>
+        <a href="datenschutz.html" data-od-id="footer-datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    // Mobile menu
+    var open = document.getElementById('menu-open'), close = document.getElementById('menu-close'), sheet = document.getElementById('menu-sheet');
+    function toggle(on) { sheet.classList.toggle('is-open', on); open.setAttribute('aria-expanded', on); document.body.style.overflow = on ? 'hidden' : ''; if (on) close.focus(); }
+    open.addEventListener('click', function () { toggle(true); });
+    close.addEventListener('click', function () { toggle(false); open.focus(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggle(false); });
+
+    // Filter + search (AC-17)
+    var list = document.getElementById('order-list');
+    var rows = Array.prototype.slice.call(list.querySelectorAll('.order-row'));
+    var filter = document.getElementById('filter-status');
+    var search = document.getElementById('search-plate');
+    var clear = document.getElementById('search-clear');
+    var count = document.getElementById('result-count');
+    var empty = document.getElementById('empty-state');
+
+    rows.forEach(function (r) {
+      var cell = r.querySelector('[data-cell="plate"]');
+      var v = cell.querySelector('.order-row__vehicle');
+      r._plate = cell.childNodes[0].nodeValue.trim();
+      r._vehicleHtml = v ? v.outerHTML : '';
+    });
+
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+    function highlight(plate, term) {
+      if (!term) return esc(plate);
+      var i = plate.toLowerCase().indexOf(term.toLowerCase());
+      if (i < 0) return esc(plate);
+      return esc(plate.slice(0, i)) + '<mark>' + esc(plate.slice(i, i + term.length)) + '</mark>' + esc(plate.slice(i + term.length));
+    }
+
+    function apply() {
+      var status = filter.value;
+      var term = search.value.trim().toLowerCase();
+      var visible = 0;
+      rows.forEach(function (r) {
+        var okStatus = !status || r.dataset.status === status;
+        var okTerm = !term || r._plate.toLowerCase().indexOf(term) >= 0;
+        var show = okStatus && okTerm;
+        r.hidden = !show;
+        if (show) visible++;
+        var cell = r.querySelector('[data-cell="plate"]');
+        cell.innerHTML = highlight(r._plate, term) + r._vehicleHtml;
+      });
+      count.textContent = String(visible);
+      empty.hidden = visible !== 0;
+      list.hidden = visible === 0;
+      clear.classList.toggle('is-shown', search.value.length > 0);
+    }
+
+    var debounce;
+    search.addEventListener('input', function () {
+      clearTimeout(debounce);
+      debounce = setTimeout(apply, 250);
+    });
+    filter.addEventListener('change', apply);
+    clear.addEventListener('click', function () { search.value = ''; apply(); search.focus(); });
+    apply();
+  })();
+  </script>
+</body>
+</html>

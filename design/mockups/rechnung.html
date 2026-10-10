@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rechnung — Kfz-Meisterbetrieb Vogel</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Zum Inhalt springen</a>
+
+  <header class="appbar" data-od-id="appbar">
+    <div class="container appbar__inner">
+      <a class="appbar__brand" href="index.html" data-od-id="brand-home">
+        <svg class="appbar__logo" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect width="24" height="24" rx="6" fill="#0F5C99"/>
+          <path d="M7 8l5 9 5-9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span class="appbar__name">Kfz-Meisterbetrieb Vogel</span>
+      </a>
+      <nav class="tabs--desktop" aria-label="Kundenbereich" data-od-id="tabs-customer">
+        <a class="tab" href="index.html">Start</a>
+        <a class="tab" href="termin.html">Termin</a>
+        <a class="tab" href="status.html">Status</a>
+        <a class="tab is-active" href="rechnung.html">Rechnung</a>
+      </nav>
+      <a class="appbar__cta" href="login.html" data-od-id="link-workshop">Werkstattbereich</a>
+    </div>
+    <nav class="tabbar--mobile" aria-label="Kundenbereich">
+      <a class="tab" href="index.html">Start</a>
+      <a class="tab" href="termin.html">Termin</a>
+      <a class="tab" href="status.html">Status</a>
+      <a class="tab is-active" href="rechnung.html">Rechnung</a>
+    </nav>
+  </header>
+
+  <main id="main" class="page" data-od-id="main-content">
+    <div class="container stack">
+
+      <header data-od-id="page-head">
+        <h1 class="h1">Rechnung</h1>
+        <p class="muted" style="margin-top: 4px;">Geben Sie Ihre Auftragsnummer und das Kennzeichen ein, um die Rechnung abzurufen.</p>
+      </header>
+
+      <form class="card form-col" id="invoice-form" novalidate data-od-id="invoice-form">
+        <div class="field" id="field-order">
+          <label for="order">Auftragsnummer <span class="req" aria-hidden="true">*</span></label>
+          <input class="input mono tnum" id="order" name="order" type="text" autocapitalize="characters" required>
+          <p class="helper">z. B. AUF-2025-0192</p>
+          <p class="error-text">Bitte geben Sie die Auftragsnummer an.</p>
+        </div>
+        <div class="field" id="field-plate">
+          <label for="plate">Kennzeichen <span class="req" aria-hidden="true">*</span></label>
+          <input class="input" id="plate" name="plate" type="text" autocapitalize="characters" required>
+          <p class="helper">z. B. B-CD 5678</p>
+          <p class="error-text">Bitte geben Sie das Kennzeichen an.</p>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit" data-od-id="submit-invoice">Rechnung anzeigen</button>
+        </div>
+      </form>
+
+      <div id="invoice-result" aria-live="polite" data-od-id="invoice-result"></div>
+
+    </div>
+  </main>
+
+  <footer class="legal-footer" data-od-id="legal-footer">
+    <div class="container legal-footer__inner">
+      <span>© 2025 Kfz-Meisterbetrieb Vogel · Vogelstraße 12, 10115 Berlin</span>
+      <nav class="legal-footer__links" aria-label="Rechtliches">
+        <a href="impressum.html" data-od-id="footer-impressum">Impressum</a>
+        <a href="datenschutz.html" data-od-id="footer-datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    var form = document.getElementById('invoice-form');
+    var result = document.getElementById('invoice-result');
+    var order = document.getElementById('order');
+    var plate = document.getElementById('plate');
+    order.addEventListener('input', function () { order.value = order.value.toUpperCase(); });
+    plate.addEventListener('input', function () { plate.value = plate.value.toUpperCase(); });
+
+    function eur(c) {
+      var neg = c < 0; c = Math.abs(c);
+      var s = (c / 100).toFixed(2).split('.');
+      var i = s[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return (neg ? '−' : '') + i + ',' + s[1] + ' €';
+    }
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+    // Mock invoice store (mirrors worker output). Amounts in whole cents.
+    var invoices = {
+      'AUF-2025-0192': {
+        plate: 'B-CD 5678', vehicle: 'BMW 320d', date: '28.03.2025', number: 'RE-2025-0064',
+        positions: [
+          { kind: 'Arbeitsposition', title: 'Ölwechsel inkl. Ölfilter', qty: '1,0 h', unit: '', price: 8900, sum: 8900 },
+          { kind: 'Teilposition', title: 'Motoröl 5W-30, 5 l', qty: '1 Stk.', unit: '', price: 6200, sum: 6200 },
+          { kind: 'Teilposition', title: 'Ölfilter', qty: '1 Stk.', unit: '', price: 1450, sum: 1450 }
+        ]
+      }
+    };
+    var ordersWithoutInvoice = { 'AUF-2025-0187': 'B-AB 1234' };
+
+    function empty(title, body) {
+      return '<div class="card"><div class="empty" data-od-id="invoice-empty">' +
+        '<svg class="empty__icon" width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h9l3 3v15H6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
+        '<p class="empty__title">' + esc(title) + '</p><p class="empty__body">' + esc(body) + '</p></div></div>';
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var okOrder = order.value.trim().length >= 3, okPlate = plate.value.trim().length >= 3;
+      document.getElementById('field-order').classList.toggle('error', !okOrder);
+      document.getElementById('field-plate').classList.toggle('error', !okPlate);
+      if (!okOrder || !okPlate) return;
+
+      var num = order.value.trim(), pl = plate.value.trim();
+      var inv = invoices[num];
+      if (inv && inv.plate === pl) {
+        var sub = 0;
+        var rows = inv.positions.map(function (p) {
+          sub += p.sum;
+          return '<div class="position-row">' +
+            '<div class="position-row__desc"><span class="position-row__title">' + esc(p.title) + '</span><span class="position-row__meta">' + esc(p.kind) + '</span></div>' +
+            '<div class="position-row__qty tnum" data-label="Menge/Zeit">' + esc(p.qty) + '</div>' +
+            '<div class="position-row__price tnum" data-label="Einzelpreis">' + eur(p.price) + '</div>' +
+            '<div class="position-row__sum tnum" data-label="Summe">' + eur(p.sum) + '</div>' +
+            '</div>';
+        }).join('');
+        var vat = Math.round(sub * 0.19);
+        var total = sub + vat;
+        result.innerHTML =
+          '<div class="card" data-od-id="invoice-view">' +
+            '<div class="card__header">' +
+              '<div><p class="caption muted">Rechnung</p><p class="h3">' + esc(inv.number) + ' · <span class="mono tnum">' + esc(num) + '</span></p></div>' +
+            '</div>' +
+            '<div class="meta" style="margin-bottom: 16px;">' +
+              '<div class="meta__item"><span class="meta__label">Kennzeichen</span><span class="meta__value tnum">' + esc(inv.plate) + '</span></div>' +
+              '<div class="meta__item"><span class="meta__label">Fahrzeug</span><span class="meta__value">' + esc(inv.vehicle) + '</span></div>' +
+              '<div class="meta__item"><span class="meta__label">Rechnungsdatum</span><span class="meta__value tnum">' + esc(inv.date) + '</span></div>' +
+            '</div>' +
+            '<div class="position-list">' + rows + '</div>' +
+            '<div class="totals"><div class="totals__inner">' +
+              '<div class="totals__row"><span>Zwischensumme</span><span class="money">' + eur(sub) + '</span></div>' +
+              '<div class="totals__row"><span>19 % MwSt.</span><span class="money">' + eur(vat) + '</span></div>' +
+              '<div class="totals__row totals__row--total"><span>Gesamtbetrag</span><span class="money">' + eur(total) + '</span></div>' +
+            '</div></div>' +
+            '<p class="caption muted" style="margin-top: 16px;">Zahlbar innerhalb von 14 Tagen ohne Abzug. Es wurde keine E-Mail versendet; die Benachrichtigung liegt im Postausgang.</p>' +
+          '</div>';
+      } else if (ordersWithoutInvoice[num] && ordersWithoutInvoice[num] === pl) {
+        // AC-13: before 'fertig' no partial data is shown.
+        result.innerHTML = empty('Die Rechnung ist ab dem Status fertig verfügbar.', 'Sobald Ihr Auftrag fertiggestellt ist, erscheint die Rechnung hier.');
+      } else {
+        result.innerHTML = empty('Rechnung nicht gefunden', 'Bitte Auftragsnummer und Kennzeichen prüfen.');
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

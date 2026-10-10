@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — Werkstattbereich</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Zum Inhalt springen</a>
+
+  <header class="appbar" data-od-id="appbar">
+    <div class="container appbar__inner">
+      <a class="appbar__brand" href="dashboard.html" data-od-id="brand-home">
+        <svg class="appbar__logo" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect width="24" height="24" rx="6" fill="#0F5C99"/>
+          <path d="M7 8l5 9 5-9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span class="appbar__name">Kfz-Meisterbetrieb Vogel <span class="appbar__area">· Werkstatt</span></span>
+      </a>
+      <nav class="appbar__links" aria-label="Werkstattbereich" data-od-id="nav-workshop">
+        <a class="is-active" href="dashboard.html">Dashboard</a>
+        <a href="auftraege.html">Aufträge</a>
+      </nav>
+      <div class="appbar__user">
+        <span class="appbar__email">werkstatt@werkstatt-vogel.de</span>
+        <a class="btn btn-ghost" href="login.html" data-od-id="logout">Abmelden</a>
+      </div>
+      <button class="appbar__menu" type="button" id="menu-open" aria-label="Menü öffnen" aria-expanded="false">Menü</button>
+    </div>
+  </header>
+
+  <div class="menu-sheet" id="menu-sheet" role="dialog" aria-modal="true" aria-label="Navigation">
+    <div class="menu-sheet__head">
+      <span class="h3">Werkstatt</span>
+      <button class="appbar__menu" type="button" id="menu-close" aria-label="Menü schließen">Schließen</button>
+    </div>
+    <nav class="menu-sheet__links">
+      <a class="is-active" href="dashboard.html">Dashboard</a>
+      <a href="auftraege.html">Aufträge</a>
+      <div class="menu-sheet__sep"></div>
+      <a href="login.html">Abmelden</a>
+    </nav>
+  </div>
+
+  <main id="main" class="page" data-od-id="main-content">
+    <div class="container stack">
+
+      <header class="row-between" data-od-id="page-head">
+        <div>
+          <h1 class="h1">Dashboard</h1>
+          <p class="muted" style="margin-top: 4px;">Überblick über den laufenden Werkstattbetrieb.</p>
+        </div>
+        <a class="btn btn-secondary" href="auftraege.html" data-od-id="cta-orders">Alle Aufträge</a>
+      </header>
+
+      <!-- AC-21: three tiles; numbers re-render when an order becomes 'fertig' -->
+      <section class="grid-3" aria-label="Kennzahlen" data-od-id="stats">
+        <div class="card stat-card" data-od-id="stat-open">
+          <span class="stat-card__label">Offene Aufträge</span>
+          <span class="stat-card__value tnum" id="stat-open-value">4</span>
+          <span class="stat-card__caption">angefragt, bestätigt, in Arbeit</span>
+        </div>
+        <div class="card stat-card" data-od-id="stat-done-today">
+          <span class="stat-card__label">Heute fertiggestellt</span>
+          <span class="stat-card__value tnum" id="stat-done-value">1</span>
+          <span class="stat-card__caption">nach Zeitpunkt des Wechsels nach „fertig"</span>
+        </div>
+        <div class="card stat-card" data-od-id="stat-revenue">
+          <span class="stat-card__label">Umsatz laufender Monat</span>
+          <span class="stat-card__value money tnum" id="stat-revenue-value">1.234,56 €</span>
+          <span class="stat-card__caption">Gesamtbeträge fertiger Rechnungen (ganze Cent)</span>
+        </div>
+      </section>
+
+      <div class="grid-cards">
+        <section class="card" data-od-id="dashboard-open-orders">
+          <div class="card__header">
+            <h2 class="h3">Offene Aufträge</h2>
+            <a class="btn btn-ghost" href="auftraege.html">Alle anzeigen</a>
+          </div>
+          <ul class="order-list">
+            <li class="order-row"><a class="order-row__link" href="auftrag.html" data-od-id="dash-order-0187">
+              <span class="order-row__num tnum">AUF-2025-0187</span>
+              <span class="order-row__plate tnum">B-AB 1234<span class="order-row__vehicle">VW Golf 8</span></span>
+              <span class="order-row__customer">Anna Schmidt</span>
+              <span class="order-row__date tnum">14.03.2025</span>
+              <span class="order-row__status"><span class="badge badge--requested"><span class="dot"></span>angefragt</span></span>
+              <svg class="order-row__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a></li>
+            <li class="order-row"><a class="order-row__link" href="auftrag.html" data-od-id="dash-order-0188">
+              <span class="order-row__num tnum">AUF-2025-0188</span>
+              <span class="order-row__plate tnum">B-EF 9012<span class="order-row__vehicle">Audi A4 Avant</span></span>
+              <span class="order-row__customer">Miriam Krause</span>
+              <span class="order-row__date tnum">17.03.2025</span>
+              <span class="order-row__status"><span class="badge badge--confirmed"><span class="dot"></span>bestätigt</span></span>
+              <svg class="order-row__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a></li>
+            <li class="order-row"><a class="order-row__link" href="auftrag.html" data-od-id="dash-order-0195">
+              <span class="order-row__num tnum">AUF-2025-0195</span>
+              <span class="order-row__plate tnum">B-GH 3456<span class="order-row__vehicle">Škoda Octavia</span></span>
+              <span class="order-row__customer">Peter Lang</span>
+              <span class="order-row__date tnum">19.03.2025</span>
+              <span class="order-row__status"><span class="badge badge--requested"><span class="dot"></span>angefragt</span></span>
+              <svg class="order-row__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a></li>
+          </ul>
+        </section>
+
+        <section class="card" data-od-id="dashboard-done-today">
+          <div class="card__header">
+            <h2 class="h3">Heute fertiggestellt</h2>
+          </div>
+          <ul class="order-list">
+            <li class="order-row"><a class="order-row__link" href="auftrag.html" data-od-id="dash-order-0192">
+              <span class="order-row__num tnum">AUF-2025-0192</span>
+              <span class="order-row__plate tnum">B-CD 5678<span class="order-row__vehicle">BMW 320d</span></span>
+              <span class="order-row__customer">Thomas Becker</span>
+              <span class="order-row__date tnum">15.03.2025</span>
+              <span class="order-row__status"><span class="badge badge--done"><span class="dot"></span>fertig</span></span>
+              <svg class="order-row__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a></li>
+          </ul>
+          <p class="caption muted" style="margin-top: 12px;">Die Zahlen oben ändern sich sichtbar, sobald ein Auftrag auf „fertig" gesetzt wird.</p>
+        </section>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="legal-footer" data-od-id="legal-footer">
+    <div class="container legal-footer__inner">
+      <span>© 2025 Kfz-Meisterbetrieb Vogel · Vogelstraße 12, 10115 Berlin</span>
+      <nav class="legal-footer__links" aria-label="Rechtliches">
+        <a href="impressum.html" data-od-id="footer-impressum">Impressum</a>
+        <a href="datenschutz.html" data-od-id="footer-datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    var open = document.getElementById('menu-open');
+    var close = document.getElementById('menu-close');
+    var sheet = document.getElementById('menu-sheet');
+    function toggle(on) {
+      sheet.classList.toggle('is-open', on);
+      open.setAttribute('aria-expanded', on ? 'true' : 'false');
+      document.body.style.overflow = on ? 'hidden' : '';
+      if (on) close.focus();
+    }
+    open.addEventListener('click', function () { toggle(true); });
+    close.addEventListener('click', function () { toggle(false); open.focus(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggle(false); });
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kundenportal — Kfz-Meisterbetrieb Vogel</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Zum Inhalt springen</a>
+
+  <!-- Customer AppBar -->
+  <header class="appbar" data-od-id="appbar">
+    <div class="container appbar__inner">
+      <a class="appbar__brand" href="index.html" data-od-id="brand-home">
+        <svg class="appbar__logo" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect width="24" height="24" rx="6" fill="#0F5C99"/>
+          <path d="M7 8l5 9 5-9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span class="appbar__name">Kfz-Meisterbetrieb Vogel</span>
+      </a>
+      <nav class="tabs--desktop" aria-label="Kundenbereich" data-od-id="tabs-customer">
+        <a class="tab is-active" href="index.html">Start</a>
+        <a class="tab" href="termin.html">Termin</a>
+        <a class="tab" href="status.html">Status</a>
+        <a class="tab" href="rechnung.html">Rechnung</a>
+      </nav>
+      <a class="appbar__cta" href="login.html" data-od-id="link-workshop">Werkstattbereich</a>
+    </div>
+    <nav class="tabbar--mobile" aria-label="Kundenbereich">
+      <a class="tab is-active" href="index.html">Start</a>
+      <a class="tab" href="termin.html">Termin</a>
+      <a class="tab" href="status.html">Status</a>
+      <a class="tab" href="rechnung.html">Rechnung</a>
+    </nav>
+  </header>
+
+  <main id="main" class="page" data-od-id="main-content">
+    <div class="container stack">
+
+      <section class="hero" data-od-id="hero">
+        <p class="hero__kicker">Ihr Kundenportal</p>
+        <h1 class="hero__title">Werkstatttermine, Status und Rechnungen an einem Ort.</h1>
+        <p class="hero__lead">Fordern Sie einen Termin an, verfolgen Sie den Fortschritt Ihres Werkstattauftrags und sehen Sie Ihre Rechnung, sobald das Fahrzeug fertig ist.</p>
+        <div class="hero__actions">
+          <a class="btn btn-primary" href="termin.html" data-od-id="cta-termin">Termin anfragen</a>
+          <a class="btn btn-secondary" href="status.html" data-od-id="cta-status">Status abfragen</a>
+        </div>
+      </section>
+
+      <section aria-label="Kundenbereich" class="grid-3" data-od-id="customer-features">
+        <a class="card feature-card" href="termin.html" data-od-id="feature-termin">
+          <svg class="feature-card__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <h2 class="h3">Termin anfragen</h2>
+          <p class="muted">Kunde, Fahrzeug und Wunschtermin erfassen — Sie erhalten sofort eine Auftragsnummer.</p>
+          <span class="feature-card__link">Termin anfragen</span>
+        </a>
+        <a class="card feature-card" href="status.html" data-od-id="feature-status">
+          <svg class="feature-card__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <h2 class="h3">Status abfragen</h2>
+          <p class="muted">Auftragsnummer und Kennzeichen eingeben und den vollständigen Statusverlauf sehen.</p>
+          <span class="feature-card__link">Status abfragen</span>
+        </a>
+        <a class="card feature-card" href="rechnung.html" data-od-id="feature-rechnung">
+          <svg class="feature-card__icon" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 3h9l3 3v15H6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <h2 class="h3">Rechnung ansehen</h2>
+          <p class="muted">Nach dem Status „fertig" stehen Positionen, Zwischensumme, MwSt. und Gesamtbetrag bereit.</p>
+          <span class="feature-card__link">Rechnung ansehen</span>
+        </a>
+      </section>
+
+      <section class="card" data-od-id="workshop-entry">
+        <div class="row-between">
+          <div>
+            <h2 class="h3">Werkstattbereich</h2>
+            <p class="muted">Für Mitarbeitende: Auftragsliste, Positionen, Statusübergänge und Dashboard. Anmeldung mit E-Mail und Passwort.</p>
+          </div>
+          <a class="btn btn-secondary" href="login.html" data-od-id="cta-login">Anmelden</a>
+        </div>
+      </section>
+
+      <!-- Reviewer overview: links to every screen in the mockup set -->
+      <section aria-labelledby="screens-heading" data-od-id="screen-index-section">
+        <h2 id="screens-heading" class="h2">Bildschirmübersicht (Mockup)</h2>
+        <p class="muted" style="margin: 8px 0 16px;">Alle geplanten Bildschirme zum Durchklicken.</p>
+        <nav class="screen-index" aria-label="Bildschirme">
+          <a href="index.html" data-od-id="screen-index-home">Startseite <span class="tag">Kunde</span></a>
+          <a href="termin.html" data-od-id="screen-index-termin">Terminanfrage <span class="tag">Kunde</span></a>
+          <a href="status.html" data-od-id="screen-index-status">Statusabfrage <span class="tag">Kunde</span></a>
+          <a href="rechnung.html" data-od-id="screen-index-rechnung">Rechnungsansicht <span class="tag">Kunde</span></a>
+          <a href="login.html" data-od-id="screen-index-login">Anmeldung <span class="tag">Werkstatt</span></a>
+          <a href="dashboard.html" data-od-id="screen-index-dashboard">Dashboard <span class="tag">Werkstatt</span></a>
+          <a href="auftraege.html" data-od-id="screen-index-auftraege">Auftragsliste <span class="tag">Werkstatt</span></a>
+          <a href="auftrag.html" data-od-id="screen-index-auftrag">Auftragsdetail <span class="tag">Werkstatt</span></a>
+          <a href="impressum.html" data-od-id="screen-index-impressum">Impressum <span class="tag">Rechtliches</span></a>
+          <a href="datenschutz.html" data-od-id="screen-index-datenschutz">Datenschutz <span class="tag">Rechtliches</span></a>
+        </nav>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- LegalFooter: present on every route -->
+  <footer class="legal-footer" data-od-id="legal-footer">
+    <div class="container legal-footer__inner">
+      <span>© 2025 Kfz-Meisterbetrieb Vogel · Vogelstraße 12, 10115 Berlin</span>
+      <nav class="legal-footer__links" aria-label="Rechtliches">
+        <a href="impressum.html" data-od-id="footer-impressum">Impressum</a>
+        <a href="datenschutz.html" data-od-id="footer-datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

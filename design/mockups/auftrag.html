@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auftrag AUF-2025-0187 — Werkstattbereich</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Zum Inhalt springen</a>
+
+  <header class="appbar" data-od-id="appbar">
+    <div class="container appbar__inner">
+      <a class="appbar__brand" href="dashboard.html" data-od-id="brand-home">
+        <svg class="appbar__logo" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect width="24" height="24" rx="6" fill="#0F5C99"/>
+          <path d="M7 8l5 9 5-9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span class="appbar__name">Kfz-Meisterbetrieb Vogel <span class="appbar__area">· Werkstatt</span></span>
+      </a>
+      <nav class="appbar__links" aria-label="Werkstattbereich" data-od-id="nav-workshop">
+        <a href="dashboard.html">Dashboard</a>
+        <a class="is-active" href="auftraege.html">Aufträge</a>
+      </nav>
+      <div class="appbar__user">
+        <span class="appbar__email">werkstatt@werkstatt-vogel.de</span>
+        <a class="btn btn-ghost" href="login.html" data-od-id="logout">Abmelden</a>
+      </div>
+      <button class="appbar__menu" type="button" id="menu-open" aria-label="Menü öffnen" aria-expanded="false">Menü</button>
+    </div>
+  </header>
+
+  <div class="menu-sheet" id="menu-sheet" role="dialog" aria-modal="true" aria-label="Navigation">
+    <div class="menu-sheet__head">
+      <span class="h3">Werkstatt</span>
+      <button class="appbar__menu" type="button" id="menu-close" aria-label="Menü schließen">Schließen</button>
+    </div>
+    <nav class="menu-sheet__links">
+      <a href="dashboard.html">Dashboard</a>
+      <a class="is-active" href="auftraege.html">Aufträge</a>
+      <div class="menu-sheet__sep"></div>
+      <a href="login.html">Abmelden</a>
+    </nav>
+  </div>
+
+  <main id="main" class="page" data-od-id="main-content">
+    <div class="container stack">
+
+      <div id="action-feedback" aria-live="polite" data-od-id="action-feedback"></div>
+
+      <header class="row-between" data-od-id="page-head">
+        <div>
+          <a class="caption" href="auftraege.html" style="text-decoration: none;">← Zur Auftragsliste</a>
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:6px;">
+            <h1 class="h1 mono tnum" style="font-size:24px;">AUF-2025-0187</h1>
+            <span id="status-badge-slot"></span>
+            <button class="icon-btn" type="button" id="copy-number" data-od-id="copy-number">Nummer kopieren</button>
+          </div>
+        </div>
+        <div id="invoice-cta"></div>
+      </header>
+
+      <section class="card" data-od-id="order-meta">
+        <div class="card__header"><h2 class="h3">Auftragsdaten</h2></div>
+        <div class="meta">
+          <div class="meta__item"><span class="meta__label">Kunde</span><span class="meta__value">Anna Schmidt</span></div>
+          <div class="meta__item"><span class="meta__label">Kennzeichen</span><span class="meta__value tnum">B-AB 1234</span></div>
+          <div class="meta__item"><span class="meta__label">Fahrzeug</span><span class="meta__value">Volkswagen Golf 8</span></div>
+          <div class="meta__item"><span class="meta__label">Kilometerstand</span><span class="meta__value tnum">128.450 km</span></div>
+          <div class="meta__item"><span class="meta__label">Wunschtermin</span><span class="meta__value tnum">14.03.2025</span></div>
+          <div class="meta__item"><span class="meta__label">Kontakt</span><span class="meta__value">anna.schmidt@example.de · 0151 23456789</span></div>
+        </div>
+        <div style="margin-top:16px;">
+          <span class="meta__label">Problembeschreibung</span>
+          <p style="margin-top:4px;">Bremsbeläge vorne verschlissen, quietscht beim Bremsen. Bitte prüfen und erneuern.</p>
+        </div>
+      </section>
+
+      <div class="grid-cards" style="align-items:start;">
+        <section class="card" data-od-id="positions-card">
+          <div class="card__header">
+            <h2 class="h3">Positionen</h2>
+            <button class="btn btn-secondary" type="button" id="add-position" data-od-id="add-position">Position hinzufügen</button>
+          </div>
+          <div id="positions-list" data-od-id="positions-list"></div>
+          <div class="totals">
+            <div class="totals__inner">
+              <div class="totals__row"><span>Zwischensumme</span><span class="money" id="sum-sub">—</span></div>
+              <div class="totals__row"><span>19 % MwSt.</span><span class="money" id="sum-vat">—</span></div>
+              <div class="totals__row totals__row--total"><span>Gesamtbetrag</span><span class="money" id="sum-total">—</span></div>
+            </div>
+          </div>
+          <p class="caption muted" id="positions-note" style="margin-top:12px;"></p>
+        </section>
+
+        <section class="card" data-od-id="status-card">
+          <div class="card__header"><h2 class="h3">Status setzen</h2></div>
+          <div class="stack-sm" id="status-actions"></div>
+          <hr style="border:0; border-top:1px solid var(--color-border); margin:16px 0;">
+          <h3 class="h3" style="margin-bottom:8px;">Statusverlauf</h3>
+          <ol class="timeline" id="timeline" data-od-id="timeline"></ol>
+        </section>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="legal-footer" data-od-id="legal-footer">
+    <div class="container legal-footer__inner">
+      <span>© 2025 Kfz-Meisterbetrieb Vogel · Vogelstraße 12, 10115 Berlin</span>
+      <nav class="legal-footer__links" aria-label="Rechtliches">
+        <a href="impressum.html" data-od-id="footer-impressum">Impressum</a>
+        <a href="datenschutz.html" data-od-id="footer-datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- Confirm dialog -->
+  <div class="overlay" id="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="dialog">
+      <h2 class="h3" id="confirm-title">Bestätigen?</h2>
+      <p class="muted" id="confirm-body" style="margin-top:8px;"></p>
+      <div class="dialog__footer">
+        <button class="btn btn-secondary" type="button" id="confirm-cancel">Abbrechen</button>
+        <button class="btn btn-primary" type="button" id="confirm-ok">Bestätigen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Position dialog (add / edit) -->
+  <div class="overlay" id="pos-overlay" role="dialog" aria-modal="true" aria-labelledby="pos-title">
+    <div class="dialog">
+      <h2 class="h3" id="pos-title">Position hinzufügen</h2>
+      <form id="pos-form" style="margin-top:16px;" novalidate>
+        <div class="field">
+          <label for="pos-type">Typ</label>
+          <select class="input" id="pos-type">
+            <option value="work">Arbeitsposition</option>
+            <option value="part">Teilposition</option>
+          </select>
+        </div>
+        <div class="field" id="pos-desc-field">
+          <label for="pos-desc" id="pos-desc-label">Beschreibung</label>
+          <input class="input" id="pos-desc" type="text">
+          <p class="error-text">Bitte eine Beschreibung angeben.</p>
+        </div>
+        <div class="field" id="pos-hours-field">
+          <label for="pos-hours">Arbeitszeit</label>
+          <input class="input tnum" id="pos-hours" type="number" step="0.5" min="0" inputmode="decimal">
+          <p class="helper">Stunden mit einer Dezimalstelle, z. B. 2,5. Stundensatz laut Konfiguration: 89,00 €/h.</p>
+        </div>
+        <div class="field-2" id="pos-part-fields" hidden>
+          <div class="field">
+            <label for="pos-qty">Menge</label>
+            <input class="input tnum" id="pos-qty" type="number" min="1" step="1" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="pos-price">Einzelpreis (€)</label>
+            <input class="input tnum" id="pos-price" type="text" inputmode="decimal" placeholder="z. B. 78,50">
+          </div>
+        </div>
+        <div class="dialog__footer">
+          <button class="btn btn-secondary" type="button" id="pos-cancel">Abbrechen</button>
+          <button class="btn btn-primary" type="submit" id="pos-save">Speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
+
+  <script>
+  (function () {
+    /* ---------- helpers ---------- */
+    function eur(c) {
+      var neg = c < 0; c = Math.abs(c);
+      var s = (c / 100).toFixed(2).split('.');
+      var i = s[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      return (neg ? '−' : '') + i + ',' + s[1] + ' €';
+    }
+    function hours(v) { return String(v).replace('.', ',') + ' h'; }
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function parseEuro(s) { s = String(s).trim().replace(',', '.'); if (!s) return NaN; return Math.round(parseFloat(s) * 100); }
+
+    var ORDER = 'AUF-2025-0187';
+    var RATE = 8900; // Stundensatz from config, in cents
+    var CHAIN = ['angefragt', 'bestätigt', 'in Arbeit', 'fertig', 'abgeholt'];
+    var BADGEKEY = { 'angefragt': 'requested', 'bestätigt': 'confirmed', 'in Arbeit': 'in_progress', 'fertig': 'done', 'abgeholt': 'picked_up' };
+    var TRANSITION_LABEL = { 'bestätigt': 'Auftrag bestätigen?', 'in Arbeit': 'In Arbeit setzen?', 'fertig': 'Auftrag fertig melden?', 'abgeholt': 'Als abgeholt markieren?' };
+    var TRANSITION_BTN = { 'bestätigt': 'Bestätigen', 'in Arbeit': 'In Arbeit setzen', 'fertig': 'Fertig melden', 'abgeholt': 'Abgeholt' };
+
+    var state = {
+      status: 'angefragt',
+      history: [ { status: 'angefragt', at: '10.03.2025, 09:12 Uhr' } ],
+      positions: [
+        { id: 1, type: 'work', desc: 'Bremsbeläge vorne erneuern', hours: 2.5, rate: RATE },
+        { id: 2, type: 'part', desc: 'Bremsbelag-Set vorne (ATE)', qty: 1, price: 7850 },
+        { id: 3, type: 'part', desc: 'Bremsscheiben vorne, Paar', qty: 2, price: 6400 }
+      ],
+      nextId: 4,
+      clock: [16, 20] // next mock timestamp HH, MM
+    };
+
+    function badge(status) {
+      return '<span class="badge badge--' + BADGEKEY[status] + '"><span class="dot"></span>' + status + '</span>';
+    }
+    function lineTotal(p) { return p.type === 'work' ? Math.round(p.hours * p.rate) : p.qty * p.price; }
+
+    /* ---------- render ---------- */
+    function renderBadge() { document.getElementById('status-badge-slot').innerHTML = badge(state.status); }
+
+    function renderPositions() {
+      var locked = state.status === 'fertig' || state.status === 'abgeholt';
+      var list = document.getElementById('positions-list');
+      if (!state.positions.length) {
+        list.innerHTML = '<div class="empty" data-od-id="positions-empty"><p class="empty__title">Noch keine Positionen</p><p class="empty__body">Fügen Sie Arbeits- und Teilpositionen hinzu.</p></div>';
+      } else {
+        list.innerHTML = state.positions.map(function (p) {
+          var isWork = p.type === 'work';
+          var qty = isWork ? hours(p.hours) : p.qty + ' Stk.';
+          var price = isWork ? eur(p.rate) + '/h' : eur(p.price);
+          var actions = locked ? '<span class="caption muted">gesperrt</span>' :
+            '<button class="icon-btn" type="button" data-edit="' + p.id + '">Bearbeiten</button>' +
+            '<button class="icon-btn icon-btn--danger" type="button" data-del="' + p.id + '">Löschen</button>';
+          return '<div class="position-row" data-od-id="position-' + p.id + '">' +
+            '<div class="position-row__desc"><span class="position-row__title">' + esc(p.desc) + '</span>' +
+              '<span class="position-row__meta">' + (isWork ? 'Arbeitsposition · Stundensatz ' + eur(p.rate) + '/h' : 'Teilposition') + '</span></div>' +
+            '<div class="position-row__qty tnum" data-label="Menge/Zeit">' + qty + '</div>' +
+            '<div class="position-row__price tnum" data-label="Einzelpreis">' + price + '</div>' +
+            '<div class="position-row__sum tnum" data-label="Summe">' + eur(lineTotal(p)) + '</div>' +
+            '<div class="position-row__actions">' + actions + '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      var sub = state.positions.reduce(function (a, p) { return a + lineTotal(p); }, 0);
+      var vat = Math.round(sub * 0.19);
+      document.getElementById('sum-sub').textContent = eur(sub);
+      document.getElementById('sum-vat').textContent = eur(vat);
+      document.getElementById('sum-total').textContent = eur(sub + vat);
+
+      document.getElementById('add-position').disabled = locked;
+      document.getElementById('positions-note').textContent = locked
+        ? 'Der Auftrag ist ' + state.status + ' — Positionen sind gesperrt und die Rechnung liegt vor.'
+        : 'Alle Beträge werden in ganzen Cent geführt; die Rechnung entsteht automatisch beim Status „fertig".';
+    }
+
+    function renderStatus() {
+      var idx = CHAIN.indexOf(state.status);
+      var next = CHAIN[idx + 1];
+      var wrap = document.getElementById('status-actions');
+      wrap.innerHTML = CHAIN.slice(1).map(function (target) {
+        var valid = target === next;
+        var cls = valid ? 'btn btn-primary' : 'btn btn-secondary';
+        var dataInvalid = valid ? '' : ' data-invalid="true"';
+        return '<button class="' + cls + ' btn-block" type="button" data-target="' + target + '"' + dataInvalid + '>' + TRANSITION_BTN[target] + '</button>';
+      }).join('') + '<p class="caption muted" style="margin-top:8px;">Erlaubt sind nur die Übergänge angefragt → bestätigt → in Arbeit → fertig → abgeholt.</p>';
+
+      var locked = state.status === 'fertig' || state.status === 'abgeholt';
+      document.getElementById('invoice-cta').innerHTML = locked
+        ? '<a class="btn btn-primary" href="rechnung.html" data-od-id="open-invoice">Rechnung ansehen</a>' : '';
+    }
+
+    function renderTimeline() {
+      document.getElementById('timeline').innerHTML = state.history.map(function (h) {
+        return '<li class="timeline__item">' + badge(h.status) + '<time class="timeline__time">' + esc(h.at) + '</time></li>';
+      }).join('');
+    }
+
+    function stamp() {
+      var mm = String(state.clock[1]).padStart(2, '0');
+      var s = '15.03.2025, ' + state.clock[0] + ':' + mm + ' Uhr';
+      state.clock[1] += 13; if (state.clock[1] >= 60) { state.clock[1] -= 60; state.clock[0] += 1; }
+      return s;
+    }
+
+    /* ---------- confirm dialog ---------- */
+    var confirmOverlay = document.getElementById('confirm-overlay');
+    var confirmTitle = document.getElementById('confirm-title');
+    var confirmBody = document.getElementById('confirm-body');
+    var confirmOk = document.getElementById('confirm-ok');
+    var lastFocus = null;
+    var confirmAction = null;
+
+    function openConfirm(opts) {
+      confirmTitle.textContent = opts.title;
+      confirmBody.textContent = opts.body || '';
+      confirmOk.textContent = opts.confirmLabel || 'Bestätigen';
+      confirmOk.className = 'btn ' + (opts.destructive ? 'btn-destructive' : 'btn-primary');
+      confirmAction = opts.onConfirm;
+      lastFocus = document.activeElement;
+      confirmOverlay.classList.add('is-open');
+      confirmOk.focus();
+    }
+    function closeConfirm() {
+      confirmOverlay.classList.remove('is-open');
+      if (lastFocus) lastFocus.focus();
+    }
+    confirmOk.addEventListener('click', function () {
+      var fn = confirmAction; closeConfirm(); if (fn) fn();
+    });
+    document.getElementById('confirm-cancel').addEventListener('click', closeConfirm);
+    confirmOverlay.addEventListener('click', function (e) { if (e.target === confirmOverlay) closeConfirm(); });
+
+    /* ---------- toast ---------- */
+    function toast(type, title, msg) {
+      var el = document.createElement('div');
+      el.className = 'alert alert--' + type;
+      el.setAttribute('role', type === 'error' ? 'alert' : 'status');
+      el.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+      var icon = type === 'error'
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v5M12 16h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5l2.5 2.5L16 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      el.innerHTML = '<span class="alert__icon" aria-hidden="true">' + icon + '</span><span class="alert__body"><strong>' + esc(title) + '</strong><span>' + esc(msg || '') + '</span></span>';
+      var wrap = document.getElementById('toast-wrap');
+      wrap.appendChild(el);
+      setTimeout(function () { el.remove(); }, 6000);
+    }
+
+    /* ---------- status transitions ---------- */
+    document.getElementById('status-actions').addEventListener('click', function (e) {
+      var btn = e.target.closest('button[data-target]');
+      if (!btn) return;
+      var target = btn.dataset.target;
+      if (btn.dataset.invalid === 'true') {
+        // AC-05 / AC-18: forbidden transition returns 409 with a readable message.
+        toast('error', 'Übergang nicht erlaubt', 'Dieser Übergang ist nicht erlaubt. Erlaubt sind nur angefragt → bestätigt → in Arbeit → fertig → abgeholt.');
+        return;
+      }
+      openConfirm({
+        title: TRANSITION_LABEL[target],
+        body: 'Der Status des Auftrags ' + ORDER + ' wird auf „' + target + '" gesetzt. Dies wird im Statusverlauf festgehalten.',
+        confirmLabel: TRANSITION_BTN[target],
+        onConfirm: function () {
+          state.status = target;
+          state.history.push({ status: target, at: stamp() });
+          renderBadge(); renderStatus(); renderPositions(); renderTimeline();
+          if (target === 'fertig') {
+            toast('success', 'Auftrag fertig gemeldet.', 'Die Rechnung wird erstellt und im Postausgang liegt eine Benachrichtigung. Es wird keine E-Mail versendet.');
+          } else {
+            toast('success', 'Auftrag ' + target + '.', 'Der Statusverlauf wurde ergänzt.');
+          }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
+
+    /* ---------- positions: add / edit / delete ---------- */
+    var posOverlay = document.getElementById('pos-overlay');
+    var posForm = document.getElementById('pos-form');
+    var posEditingId = null;
+    var posLastFocus = null;
+
+    var posType = document.getElementById('pos-type');
+    var posDescLabel = document.getElementById('pos-desc-label');
+    var posHoursField = document.getElementById('pos-hours-field');
+    var posPartFields = document.getElementById('pos-part-fields');
+
+    function syncPosType() {
+      var isWork = posType.value === 'work';
+      posDescLabel.textContent = isWork ? 'Beschreibung' : 'Bezeichnung';
+      posHoursField.hidden = !isWork;
+      posPartFields.hidden = isWork;
+    }
+    posType.addEventListener('change', syncPosType);
+
+    function openPos(p) {
+      posEditingId = p ? p.id : null;
+      document.getElementById('pos-title').textContent = p ? 'Position bearbeiten' : 'Position hinzufügen';
+      posType.value = p ? p.type : 'work';
+      document.getElementById('pos-desc').value = p ? p.desc : '';
+      document.getElementById('pos-hours').value = p && p.type === 'work' ? p.hours : '';
+      document.getElementById('pos-qty').value = p && p.type === 'part' ? p.qty : '';
+      document.getElementById('pos-price').value = p && p.type === 'part' ? (p.price / 100).toFixed(2).replace('.', ',') : '';
+      posForm.querySelectorAll('.field').forEach(function (f) { f.classList.remove('error'); });
+      syncPosType();
+      posLastFocus = document.activeElement;
+      posOverlay.classList.add('is-open');
+      document.getElementById('pos-desc').focus();
+    }
+    function closePos() {
+      posOverlay.classList.remove('is-open');
+      if (posLastFocus) posLastFocus.focus();
+    }
+    document.getElementById('add-position').addEventListener('click', function () { openPos(null); });
+    document.getElementById('pos-cancel').addEventListener('click', closePos);
+    posOverlay.addEventListener('click', function (e) { if (e.target === posOverlay) closePos(); });
+
+    posForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var isWork = posType.value === 'work';
+      var desc = document.getElementById('pos-desc').value.trim();
+      var okDesc = desc.length >= 2;
+      document.getElementById('pos-desc-field').classList.toggle('error', !okDesc);
+      var obj;
+      if (isWork) {
+        var h = parseFloat(String(document.getElementById('pos-hours').value).replace(',', '.'));
+        if (!(h > 0)) { document.getElementById('pos-hours').focus(); return; }
+        obj = { id: posEditingId || state.nextId++, type: 'work', desc: desc, hours: h, rate: RATE };
+      } else {
+        var q = parseInt(document.getElementById('pos-qty').value, 10);
+        var pr = parseEuro(document.getElementById('pos-price').value);
+        if (!(q > 0) || !(pr >= 0)) { document.getElementById('pos-qty').focus(); return; }
+        obj = { id: posEditingId || state.nextId++, type: 'part', desc: desc, qty: q, price: pr };
+      }
+      if (!okDesc) { return; }
+      if (posEditingId) {
+        state.positions = state.positions.map(function (p) { return p.id === posEditingId ? obj : p; });
+      } else {
+        state.positions.push(obj);
+      }
+      closePos();
+      renderPositions();
+      toast('success', posEditingId ? 'Position geändert.' : 'Position hinzugefügt.', 'Die Beträge wurden aktualisiert.');
+    });
+
+    document.getElementById('positions-list').addEventListener('click', function (e) {
+      var edit = e.target.closest('[data-edit]');
+      var del = e.target.closest('[data-del]');
+      if (edit) {
+        var id = parseInt(edit.dataset.edit, 10);
+        openPos(state.positions.filter(function (p) { return p.id === id; })[0]);
+      } else if (del) {
+        var did = parseInt(del.dataset.del, 10);
+        var pos = state.positions.filter(function (p) { return p.id === did; })[0];
+        openConfirm({
+          title: 'Position löschen?',
+          body: '„' + pos.desc + '" wird entfernt. Die Beträge des Auftrags werden neu berechnet.',
+          confirmLabel: 'Löschen', destructive: true,
+          onConfirm: function () {
+            state.positions = state.positions.filter(function (p) { return p.id !== did; });
+            renderPositions();
+            toast('success', 'Position gelöscht.', 'Die Summen wurden neu berechnet.');
+          }
+        });
+      }
+    });
+
+    /* ---------- copy order number ---------- */
+    document.getElementById('copy-number').addEventListener('click', function () {
+      var done = function () { toast('success', 'Kopiert.', ORDER + ' liegt in der Zwischenablage.'); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(ORDER).then(done, done);
+      } else { done(); }
+    });
+
+    /* ---------- mobile menu ---------- */
+    var mo = document.getElementById('menu-open'), mc = document.getElementById('menu-close'), sheet = document.getElementById('menu-sheet');
+    function mt(on) { sheet.classList.toggle('is-open', on); mo.setAttribute('aria-expanded', on); document.body.style.overflow = on ? 'hidden' : ''; if (on) mc.focus(); }
+    mo.addEventListener('click', function () { mt(true); });
+    mc.addEventListener('click', function () { mt(false); mo.focus(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      if (posOverlay.classList.contains('is-open')) { closePos(); }
+      else if (confirmOverlay.classList.contains('is-open')) { closeConfirm(); }
+      else { mt(false); }
+    });
+
+    /* ---------- init ---------- */
+    renderBadge(); renderStatus(); renderPositions(); renderTimeline();
+  })();
+  </script>
+</body>
+</html>

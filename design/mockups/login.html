@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anmeldung — Werkstattbereich</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Zum Inhalt springen</a>
+
+  <header class="appbar" data-od-id="appbar">
+    <div class="container appbar__inner">
+      <a class="appbar__brand" href="index.html" data-od-id="brand-home">
+        <svg class="appbar__logo" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect width="24" height="24" rx="6" fill="#0F5C99"/>
+          <path d="M7 8l5 9 5-9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span class="appbar__name">Kfz-Meisterbetrieb Vogel <span class="appbar__area">· Werkstattbereich</span></span>
+      </a>
+      <a class="appbar__cta" href="index.html" data-od-id="link-customer">Kundenbereich</a>
+    </div>
+  </header>
+
+  <main id="main" class="page" data-od-id="main-content">
+    <div class="container stack">
+
+      <div class="login-wrap" style="max-width: 400px; margin-inline: auto;">
+        <header style="text-align: center; margin-bottom: 24px;" data-od-id="page-head">
+          <h1 class="h1">Anmeldung</h1>
+          <p class="muted" style="margin-top: 4px;">Zugang zum Werkstattbereich mit Ihrer geschäftlichen E-Mail.</p>
+        </header>
+
+        <section class="card" data-od-id="login-card">
+          <div id="login-alert" aria-live="assertive" style="margin-bottom: 16px; display: none;">
+            <div class="alert alert--error" role="alert">
+              <span class="alert__icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v5M12 16h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </span>
+              <span class="alert__body"><strong>Anmeldung fehlgeschlagen</strong><span id="login-alert-msg">E-Mail oder Passwort ist falsch.</span></span>
+            </div>
+          </div>
+
+          <form id="login-form" novalidate>
+            <div class="field" id="field-email">
+              <label for="login-email">E-Mail <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="login-email" name="email" type="email" autocomplete="username" value="werkstatt@werkstatt-vogel.de" required>
+              <p class="helper">z. B. werkstatt@werkstatt-vogel.de</p>
+              <p class="error-text">Bitte geben Sie eine gültige E-Mail-Adresse an.</p>
+            </div>
+
+            <div class="field field-pass" id="field-password">
+              <label for="login-password">Passwort <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="login-password" name="password" type="password" autocomplete="current-password" value="Fahrzeug#2025" required>
+              <button class="pass-toggle" type="button" id="toggle-pass" aria-label="Passwort anzeigen" aria-pressed="false">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.6"/></svg>
+              </button>
+              <p class="error-text">Bitte geben Sie Ihr Passwort an.</p>
+            </div>
+
+            <button class="btn btn-primary btn-block" type="submit" id="login-submit" style="margin-top: 8px;" data-od-id="submit-login">Anmelden</button>
+          </form>
+        </section>
+
+        <p class="caption muted" style="text-align: center; margin-top: 16px;">Die Anmelderoute begrenzt Fehlversuche pro Client (z. B. höchstens 10 pro Minute) und antwortet nicht unterschiedlich für unbekannte E-Mail und falsches Passwort.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="legal-footer" data-od-id="legal-footer">
+    <div class="container legal-footer__inner">
+      <span>© 2025 Kfz-Meisterbetrieb Vogel · Vogelstraße 12, 10115 Berlin</span>
+      <nav class="legal-footer__links" aria-label="Rechtliches">
+        <a href="impressum.html" data-od-id="footer-impressum">Impressum</a>
+        <a href="datenschutz.html" data-od-id="footer-datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    var form = document.getElementById('login-form');
+    var email = document.getElementById('login-email');
+    var password = document.getElementById('login-password');
+    var alertBox = document.getElementById('login-alert');
+    var alertMsg = document.getElementById('login-alert-msg');
+    var submit = document.getElementById('login-submit');
+    var press = document.getElementById('toggle-pass');
+
+    press.addEventListener('click', function () {
+      var show = password.type === 'password';
+      password.type = show ? 'text' : 'password';
+      press.setAttribute('aria-pressed', show ? 'true' : 'false');
+      press.setAttribute('aria-label', show ? 'Passwort verbergen' : 'Passwort anzeigen');
+    });
+
+    function setError(id, bad) { document.getElementById(id).classList.toggle('error', bad); }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      alertBox.style.display = 'none';
+      var okEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value.trim());
+      var okPass = password.value.length >= 6;
+      setError('field-email', !okEmail);
+      setError('field-password', !okPass);
+      if (!okEmail || !okPass) return;
+
+      submit.setAttribute('aria-busy', 'true');
+      submit.disabled = true;
+      submit.innerHTML = '<span class="spinner" aria-hidden="true"></span> Anmelden…';
+
+      // Mock auth: the seeded workshop account authenticates; anything else is rejected neutrally.
+      setTimeout(function () {
+        var ok = email.value.trim().toLowerCase() === 'werkstatt@werkstatt-vogel.de' && password.value === 'Fahrzeug#2025';
+        if (ok) { window.location.href = 'dashboard.html'; return; }
+        submit.disabled = false;
+        submit.removeAttribute('aria-busy');
+        submit.textContent = 'Anmelden';
+        alertMsg.textContent = 'E-Mail oder Passwort ist falsch.';
+        alertBox.style.display = 'block';
+        // AC-35: never log credentials.
+      }, 550);
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terminanfrage — Kfz-Meisterbetrieb Vogel</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Zum Inhalt springen</a>
+
+  <header class="appbar" data-od-id="appbar">
+    <div class="container appbar__inner">
+      <a class="appbar__brand" href="index.html" data-od-id="brand-home">
+        <svg class="appbar__logo" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect width="24" height="24" rx="6" fill="#0F5C99"/>
+          <path d="M7 8l5 9 5-9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span class="appbar__name">Kfz-Meisterbetrieb Vogel</span>
+      </a>
+      <nav class="tabs--desktop" aria-label="Kundenbereich" data-od-id="tabs-customer">
+        <a class="tab" href="index.html">Start</a>
+        <a class="tab is-active" href="termin.html">Termin</a>
+        <a class="tab" href="status.html">Status</a>
+        <a class="tab" href="rechnung.html">Rechnung</a>
+      </nav>
+      <a class="appbar__cta" href="login.html" data-od-id="link-workshop">Werkstattbereich</a>
+    </div>
+    <nav class="tabbar--mobile" aria-label="Kundenbereich">
+      <a class="tab" href="index.html">Start</a>
+      <a class="tab is-active" href="termin.html">Termin</a>
+      <a class="tab" href="status.html">Status</a>
+      <a class="tab" href="rechnung.html">Rechnung</a>
+    </nav>
+  </header>
+
+  <main id="main" class="page" data-od-id="main-content">
+    <div class="container stack">
+
+      <header class="row-between" data-od-id="page-head">
+        <div>
+          <h1 class="h1">Terminanfrage</h1>
+          <p class="muted" style="margin-top: 4px;">Erfassen Sie Ihre Kontaktdaten und Ihr Fahrzeug. Wir melden uns mit einem passenden Termin.</p>
+        </div>
+        <a class="btn btn-ghost" href="index.html">Zurück zur Startseite</a>
+      </header>
+
+      <!-- Success confirmation (hidden until submit) -->
+      <section class="card" id="termin-success" hidden aria-live="polite" data-od-id="termin-success">
+        <div class="card__header">
+          <h2 class="h3">Terminanfrage eingegangen</h2>
+          <span class="badge badge--requested"><span class="dot"></span>angefragt</span>
+        </div>
+        <p class="muted">Vielen Dank, <span id="termin-success-name">—</span>. Ihre Terminanfrage wurde mit folgender Auftragsnummer angelegt:</p>
+        <p class="h2 mono tnum" id="termin-success-number" style="margin: 8px 0 16px;">AUF-2025-0201</p>
+        <div class="form-actions">
+          <a class="btn btn-primary" href="status.html" data-od-id="success-status">Status abfragen</a>
+          <a class="btn btn-secondary" href="index.html">Neue Anfrage</a>
+        </div>
+      </section>
+
+      <form class="card form-col" id="termin-form" novalidate data-od-id="termin-form">
+        <input type="hidden" name="orderNumber" value="AUF-2025-0201">
+
+        <fieldset style="border:0; padding:0; margin:0 0 24px;">
+          <legend class="h3" style="margin-bottom: 12px;">Ihre Kontaktdaten</legend>
+
+          <div class="field" id="field-name">
+            <label for="name">Name <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="name" name="name" type="text" autocomplete="name" required>
+            <p class="helper">Vor- und Nachname.</p>
+            <p class="error-text">Bitte geben Sie Ihren Namen an.</p>
+          </div>
+
+          <div class="field-2">
+            <div class="field" id="field-email">
+              <label for="email">E-Mail <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="email" name="email" type="email" autocomplete="email" required>
+              <p class="helper">z. B. name@beispiel.de</p>
+              <p class="error-text">Bitte geben Sie eine gültige E-Mail-Adresse an.</p>
+            </div>
+            <div class="field" id="field-phone">
+              <label for="phone">Telefon <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="phone" name="phone" type="tel" autocomplete="tel" required>
+              <p class="helper">z. B. 0151 23456789</p>
+              <p class="error-text">Bitte geben Sie Ihre Telefonnummer an.</p>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset style="border:0; padding:0; margin:0 0 24px;">
+          <legend class="h3" style="margin-bottom: 12px;">Ihr Fahrzeug</legend>
+
+          <div class="field" id="field-plate">
+            <label for="plate">Kennzeichen <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="plate" name="plate" type="text" autocapitalize="characters" required>
+            <p class="helper">z. B. B-AB 1234</p>
+            <p class="error-text">Bitte geben Sie das Kennzeichen an.</p>
+          </div>
+
+          <div class="field-2">
+            <div class="field" id="field-make">
+              <label for="make">Marke</label>
+              <input class="input" id="make" name="make" type="text">
+            </div>
+            <div class="field" id="field-model">
+              <label for="model">Modell</label>
+              <input class="input" id="model" name="model" type="text">
+            </div>
+          </div>
+
+          <div class="field" id="field-mileage">
+            <label for="mileage">Kilometerstand</label>
+            <input class="input tnum" id="mileage" name="mileage" type="number" inputmode="numeric" min="0">
+            <p class="helper">Ganze Kilometer, z. B. 128450.</p>
+            <p class="error-text">Bitte geben Sie den Kilometerstand als ganze Zahl an.</p>
+          </div>
+        </fieldset>
+
+        <fieldset style="border:0; padding:0; margin:0 0 24px;">
+          <legend class="h3" style="margin-bottom: 12px;">Ihr Anliegen</legend>
+
+          <div class="field" id="field-date">
+            <label for="wishdate">Wunschtermin</label>
+            <input class="input tnum" id="wishdate" name="wishdate" type="date">
+            <p class="helper">Format TT.MM.JJJJ — wir bestätigen den Termin per E-Mail.</p>
+          </div>
+
+          <div class="field" id="field-problem">
+            <label for="problem">Problembeschreibung <span class="req" aria-hidden="true">*</span></label>
+            <textarea class="input" id="problem" name="problem" required></textarea>
+            <p class="helper">Beschreiben Sie das Problem oder den gewünschten Service.</p>
+            <p class="error-text">Bitte beschreiben Sie Ihr Anliegen kurz.</p>
+          </div>
+        </fieldset>
+
+        <p class="caption muted" style="margin-bottom: 16px;">Mit dem Absenden werden Name, E-Mail, Telefon und Kennzeichen zur Bearbeitung Ihrer Anfrage gespeichert. Details in der <a href="datenschutz.html">Datenschutzerklärung</a>.</p>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit" data-od-id="submit-termin">Termin anfragen</button>
+          <a class="btn btn-secondary" href="index.html">Abbrechen</a>
+        </div>
+      </form>
+
+    </div>
+  </main>
+
+  <footer class="legal-footer" data-od-id="legal-footer">
+    <div class="container legal-footer__inner">
+      <span>© 2025 Kfz-Meisterbetrieb Vogel · Vogelstraße 12, 10115 Berlin</span>
+      <nav class="legal-footer__links" aria-label="Rechtliches">
+        <a href="impressum.html" data-od-id="footer-impressum">Impressum</a>
+        <a href="datenschutz.html" data-od-id="footer-datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    var form = document.getElementById('termin-form');
+    var success = document.getElementById('termin-success');
+    var submitted = false;
+
+    // Plate is normalized to uppercase while typing (matches API normalization).
+    var plate = document.getElementById('plate');
+    plate.addEventListener('input', function () { plate.value = plate.value.toUpperCase(); });
+
+    function setError(fieldId, hasError) {
+      var el = document.getElementById(fieldId);
+      if (el) el.classList.toggle('error', hasError);
+    }
+
+    // AC-25: fields only show errors after a value was typed and left OR after submit.
+    form.querySelectorAll('.field .input').forEach(function (input) {
+      input.addEventListener('blur', function () {
+        if (!input.value.trim()) return; // untouched stays neutral
+        validateField(input);
+      });
+      input.addEventListener('input', function () {
+        if (submitted) validateField(input);
+      });
+    });
+
+    function rules(input) {
+      var id = input.id, v = input.value.trim();
+      if (id === 'name') return v.length >= 2;
+      if (id === 'email') return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
+      if (id === 'phone') return v.replace(/[^\d]/g, '').length >= 6;
+      if (id === 'plate') return v.length >= 3;
+      if (id === 'problem') return v.length >= 5;
+      if (id === 'mileage') return v === '' || /^\d+$/.test(v);
+      return true;
+    }
+    function validateField(input) {
+      var ok = rules(input);
+      setError('field-' + input.id, !ok);
+      return ok;
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      submitted = true;
+      var inputs = Array.prototype.slice.call(form.querySelectorAll('.field .input'));
+      var valid = inputs.every(function (i) { return validateField(i); });
+      if (!valid) {
+        var firstBad = form.querySelector('.field.error .input');
+        if (firstBad) firstBad.focus();
+        return;
+      }
+      document.getElementById('termin-success-name').textContent = document.getElementById('name').value.trim();
+      document.getElementById('termin-success-number').textContent = form.orderNumber.value;
+      success.hidden = false;
+      form.hidden = true;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Statusabfrage — Kfz-Meisterbetrieb Vogel</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="sr-only" href="#main">Zum Inhalt springen</a>
+
+  <header class="appbar" data-od-id="appbar">
+    <div class="container appbar__inner">
+      <a class="appbar__brand" href="index.html" data-od-id="brand-home">
+        <svg class="appbar__logo" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect width="24" height="24" rx="6" fill="#0F5C99"/>
+          <path d="M7 8l5 9 5-9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span class="appbar__name">Kfz-Meisterbetrieb Vogel</span>
+      </a>
+      <nav class="tabs--desktop" aria-label="Kundenbereich" data-od-id="tabs-customer">
+        <a class="tab" href="index.html">Start</a>
+        <a class="tab" href="termin.html">Termin</a>
+        <a class="tab is-active" href="status.html">Status</a>
+        <a class="tab" href="rechnung.html">Rechnung</a>
+      </nav>
+      <a class="appbar__cta" href="login.html" data-od-id="link-workshop">Werkstattbereich</a>
+    </div>
+    <nav class="tabbar--mobile" aria-label="Kundenbereich">
+      <a class="tab" href="index.html">Start</a>
+      <a class="tab" href="termin.html">Termin</a>
+      <a class="tab is-active" href="status.html">Status</a>
+      <a class="tab" href="rechnung.html">Rechnung</a>
+    </nav>
+  </header>
+
+  <main id="main" class="page" data-od-id="main-content">
+    <div class="container stack">
+
+      <header data-od-id="page-head">
+        <h1 class="h1">Status abfragen</h1>
+        <p class="muted" style="margin-top: 4px;">Geben Sie Ihre Auftragsnummer und das Kennzeichen ein, um den aktuellen Status und den Verlauf zu sehen.</p>
+      </header>
+
+      <form class="card form-col" id="status-form" novalidate data-od-id="status-form">
+        <div class="field" id="field-order">
+          <label for="order">Auftragsnummer <span class="req" aria-hidden="true">*</span></label>
+          <input class="input mono tnum" id="order" name="order" type="text" autocapitalize="characters" required>
+          <p class="helper">z. B. AUF-2025-0187</p>
+          <p class="error-text">Bitte geben Sie die Auftragsnummer an.</p>
+        </div>
+        <div class="field" id="field-plate">
+          <label for="plate">Kennzeichen <span class="req" aria-hidden="true">*</span></label>
+          <input class="input" id="plate" name="plate" type="text" autocapitalize="characters" required>
+          <p class="helper">z. B. B-AB 1234</p>
+          <p class="error-text">Bitte geben Sie das Kennzeichen an.</p>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit" data-od-id="submit-status">Status abfragen</button>
+        </div>
+      </form>
+
+      <!-- Result region -->
+      <div id="status-result" aria-live="polite" data-od-id="status-result"></div>
+
+    </div>
+  </main>
+
+  <footer class="legal-footer" data-od-id="legal-footer">
+    <div class="container legal-footer__inner">
+      <span>© 2025 Kfz-Meisterbetrieb Vogel · Vogelstraße 12, 10115 Berlin</span>
+      <nav class="legal-footer__links" aria-label="Rechtliches">
+        <a href="impressum.html" data-od-id="footer-impressum">Impressum</a>
+        <a href="datenschutz.html" data-od-id="footer-datenschutz">Datenschutz</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    var form = document.getElementById('status-form');
+    var result = document.getElementById('status-result');
+    var submitted = false;
+
+    var order = document.getElementById('order');
+    var plate = document.getElementById('plate');
+    order.addEventListener('input', function () { order.value = order.value.toUpperCase(); });
+    plate.addEventListener('input', function () { plate.value = plate.value.toUpperCase(); });
+
+    // Mock order store (mirrors the API seed data).
+    var orders = {
+      'AUF-2025-0187': {
+        plate: 'B-AB 1234', vehicle: 'Volkswagen Golf 8', customer: 'Anna Schmidt',
+        status: 'in_progress',
+        history: [
+          { status: 'angefragt', at: '10.03.2025, 09:12 Uhr' },
+          { status: 'bestätigt', at: '11.03.2025, 14:05 Uhr' },
+          { status: 'in Arbeit', at: '14.03.2025, 08:30 Uhr' }
+        ]
+      },
+      'AUF-2025-0192': {
+        plate: 'B-CD 5678', vehicle: 'BMW 320d', customer: 'Thomas Becker',
+        status: 'done',
+        history: [
+          { status: 'angefragt', at: '12.03.2025, 10:20 Uhr' },
+          { status: 'bestätigt', at: '12.03.2025, 16:40 Uhr' },
+          { status: 'in Arbeit', at: '15.03.2025, 07:55 Uhr' },
+          { status: 'fertig', at: '15.03.2025, 15:10 Uhr' }
+        ]
+      }
+    };
+    var labels = { 'angefragt': 'angefragt', 'bestätigt': 'bestätigt', 'in Arbeit': 'in Arbeit', 'fertig': 'fertig', 'abgeholt': 'abgeholt' };
+    var keys = { 'angefragt': 'requested', 'bestätigt': 'confirmed', 'in Arbeit': 'in_progress', 'fertig': 'done', 'abgeholt': 'picked_up' };
+
+    function badge(status) {
+      return '<span class="badge badge--' + keys[status] + '"><span class="dot"></span>' + labels[status] + '</span>';
+    }
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+    function neutralEmpty() {
+      result.innerHTML =
+        '<div class="card"><div class="empty" data-od-id="status-empty">' +
+        '<svg class="empty__icon" width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
+        '<p class="empty__title">Status nicht gefunden</p>' +
+        '<p class="empty__body">Bitte Auftragsnummer und Kennzeichen prüfen.</p>' +
+        '</div></div>';
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      submitted = true;
+      var okOrder = order.value.trim().length >= 3;
+      var okPlate = plate.value.trim().length >= 3;
+      document.getElementById('field-order').classList.toggle('error', !okOrder);
+      document.getElementById('field-plate').classList.toggle('error', !okPlate);
+      if (!okOrder || !okPlate) return;
+
+      var o = orders[order.value.trim()];
+      // Neutral error: identical whether the order is unknown or the plate mismatches.
+      if (!o || o.plate !== plate.value.trim()) { neutralEmpty(); return; }
+
+      var rows = o.history.map(function (h) {
+        return '<li class="timeline__item">' + badge(h.status) + '<time class="timeline__time">' + esc(h.at) + '</time></li>';
+      }).join('');
+
+      var invoiceCta = o.status === 'done'
+        ? '<a class="btn btn-secondary" href="rechnung.html">Rechnung ansehen</a>' : '';
+
+      result.innerHTML =
+        '<div class="card" data-od-id="status-found">' +
+          '<div class="card__header">' +
+            '<div><p class="caption muted">Auftragsnummer</p><p class="h3 mono tnum">' + esc(order.value.trim()) + '</p></div>' +
+            badge(o.status) +
+          '</div>' +
+          '<div class="meta" style="margin-bottom: 24px;">' +
+            '<div class="meta__item"><span class="meta__label">Fahrzeug</span><span class="meta__value">' + esc(o.vehicle) + '</span></div>' +
+            '<div class="meta__item"><span class="meta__label">Kennzeichen</span><span class="meta__value tnum">' + esc(o.plate) + '</span></div>' +
+          '</div>' +
+          '<h3 class="h3" style="margin-bottom: 8px;">Statusverlauf</h3>' +
+          '<ol class="timeline">' + rows + '</ol>' +
+          (invoiceCta ? '<div class="form-actions" style="margin-top: 24px;">' + invoiceCta + '</div>' : '') +
+        '</div>';
+    });
+  })();
+  </script>
+</body>
+</html>
