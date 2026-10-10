@@ -4,9 +4,14 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
+	"workshop-api/internal/auth"
 	"workshop-api/internal/model"
 )
+
+const bearerPrefix = "Bearer "
 
 type contextKey int
 
@@ -23,11 +28,32 @@ func EmployeeFromContext(ctx context.Context) (model.Employee, bool) {
 	return emp, ok
 }
 
-// RequireAuth guards the workshop routes. The skeleton passes the request
-// through and sets no employee; the auth ticket fills in the bearer-token check.
+// RequireAuth guards the workshop routes with the bearer token. It reads the
+// Authorization: Bearer header, verifies the HS256 token and stores the
+// signed-in employee in the request context; any missing, malformed, forged or
+// expired token is answered with 401 unauthorized in the error envelope.
 func RequireAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		next.ServeHTTP(w, r)
+		header := strings.TrimSpace(r.Header.Get("Authorization"))
+		if len(header) <= len(bearerPrefix) || !strings.EqualFold(header[:len(bearerPrefix)], bearerPrefix) {
+			writeError(w, http.StatusUnauthorized, CodeUnauthorized, "unauthorized")
+			return
+		}
+
+		claims, err := auth.VerifyToken(strings.TrimSpace(header[len(bearerPrefix):]))
+		if err != nil {
+			writeError(w, http.StatusUnauthorized, CodeUnauthorized, "unauthorized")
+			return
+		}
+
+		employeeID, err := strconv.ParseInt(strings.TrimSpace(claims.Sub), 10, 64)
+		if err != nil {
+			writeError(w, http.StatusUnauthorized, CodeUnauthorized, "unauthorized")
+			return
+		}
+
+		emp := model.Employee{ID: employeeID, Email: claims.Email}
+		next.ServeHTTP(w, r.WithContext(WithEmployee(r.Context(), emp)))
 	})
 }
 
