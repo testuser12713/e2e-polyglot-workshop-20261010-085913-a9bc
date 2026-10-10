@@ -140,7 +140,7 @@
           "install",
           "-q",
           "-r",
-          "worker/requirements.txt"
+          "requirements.txt"
         ]
       ],
       "start": [
