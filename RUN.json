@@ -1,0 +1,25 @@
+{
+  "runcontract": 1,
+  "services": [
+    {
+      "name": "worker",
+      "dir": ".",
+      "stack": "python",
+      "kind": "worker",
+      "install": [
+        ["${python}", "-m", "pip", "install", "-q", "-r", "worker/requirements.txt"]
+      ],
+      "start": ["${python}", "-m", "worker.main"],
+      "ready_log": "worker ready",
+      "depends_on": ["db", "queue"],
+      "env": {
+        "DATABASE_URL": { "dev": "${service:db.url}" },
+        "VALKEY_URL": { "dev": "${service:queue.url}" },
+        "HOURLY_RATE_CENTS": { "dev": "8500" }
+      },
+      "test": [["${python}", "-m", "pytest", "-q"]]
+    },
+    { "name": "db", "kind": "database", "engine": "postgres" },
+    { "name": "queue", "kind": "database", "engine": "valkey" }
+  ]
+}
