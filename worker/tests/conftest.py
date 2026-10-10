@@ -51,7 +51,14 @@ def valkey(valkey_url: str) -> redis.Redis:
 
 
 @pytest.fixture(scope="session")
-def schema_applied(postgres_connection: psycopg.Connection) -> psycopg.Connection:
+def schema_connection(database_url: str) -> psycopg.Connection:
+    """A session-scoped connection used only to apply the schema once."""
+    with psycopg.connect(database_url) as conn:
+        yield conn
+
+
+@pytest.fixture(scope="session")
+def schema_applied(schema_connection: psycopg.Connection) -> psycopg.Connection:
     """Apply the shared schema migration to the real database.
 
     Worker tests that need tables request this fixture. The migration file is
@@ -60,7 +67,7 @@ def schema_applied(postgres_connection: psycopg.Connection) -> psycopg.Connectio
     """
     if not MIGRATION_FILE.exists():
         pytest.skip(f"schema migration {MIGRATION_FILE} is not present on this branch")
-    with postgres_connection.cursor() as cur:
+    with schema_connection.cursor() as cur:
         cur.execute(MIGRATION_FILE.read_text(encoding="utf-8"))
-    postgres_connection.commit()
-    return postgres_connection
+    schema_connection.commit()
+    return schema_connection
