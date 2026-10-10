@@ -259,6 +259,43 @@ a {
   font-size: 12px;
 }
 
+/* Legal prose (Impressum / Datenschutz) */
+.prose {
+  max-width: 720px;
+}
+
+.prose h2 {
+  margin-top: var(--space-5);
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.prose h2:first-child {
+  margin-top: 0;
+}
+
+.prose h3 {
+  margin-top: var(--space-4);
+  font-size: 18px;
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+.prose p {
+  margin-top: var(--space-2);
+  color: var(--color-fg);
+}
+
+.prose ul {
+  margin-top: var(--space-2);
+  padding-left: 20px;
+}
+
+.prose li {
+  margin-top: var(--space-0);
+}
+
 /* Button */
 .btn {
   display: inline-flex;
