@@ -33,6 +33,12 @@ MAX_DELIVERIES = 3
 # Default block time of the read loop, in milliseconds.
 DEFAULT_READ_BLOCK_MS = 5000
 
+# The socket read timeout must be longer than the server-side block time of a
+# blocking XREADGROUP, otherwise an idle stream raises a socket TimeoutError
+# instead of the read returning empty after read_block_ms. redis-py's own
+# default socket timeout is only 5s, so it is set explicitly here.
+SOCKET_TIMEOUT_MARGIN_S = 5.0
+
 # Default idle time before a pending message is considered abandoned by a dead
 # consumer and reclaimed, in milliseconds.
 DEFAULT_CLAIM_MIN_IDLE_MS = 60_000
@@ -66,7 +72,19 @@ class Queue:
         self.read_count = read_count
         self.read_block_ms = read_block_ms
         self.claim_min_idle_ms = claim_min_idle_ms
-        self.client = redis.Redis.from_url(url, decode_responses=True)
+        # Keep the socket read timeout strictly longer than the blocking read's
+        # block time, so idling in the consume loop is not mistaken for a dead
+        # connection. A block time of 0 means "block forever", in which case the
+        # socket timeout is disabled as well.
+        if read_block_ms and read_block_ms > 0:
+            socket_timeout: float | None = read_block_ms / 1000.0 + SOCKET_TIMEOUT_MARGIN_S
+        else:
+            socket_timeout = None
+        self.client = redis.Redis.from_url(
+            url,
+            decode_responses=True,
+            socket_timeout=socket_timeout,
+        )
         # Touch the server once so a worker started against an unreachable Valkey
         # fails at startup instead of silently doing nothing.
         self.client.ping()
