@@ -111,6 +111,15 @@ func TestUnknownRouteReturnsNotFoundEnvelope(t *testing.T) {
 // replace those bodies.
 func TestStubRoutesAreWired(t *testing.T) {
 	router := newTestRouter(t)
+
+	// A path that matches no registered route falls through to the catch-all
+	// handler. Comparing against that response tells "registered, but answers
+	// the designed neutral 404 for unknown input" (the public lookups do) apart
+	// from "never wired at all".
+	fallthroughRec := httptest.NewRecorder()
+	router.ServeHTTP(fallthroughRec, httptest.NewRequest(http.MethodGet, "/api/definitely-not-a-route", nil))
+	fallthroughBody := fallthroughRec.Body.String()
+
 	// notFoundOK marks a single-resource lookup whose implemented handler
 	// legitimately answers 404 for an unknown identifier; such a route is
 	// covered by its own feature test rather than this wiring probe.
@@ -120,8 +129,8 @@ func TestStubRoutesAreWired(t *testing.T) {
 		notFoundOK bool
 	}{
 		{http.MethodPost, "/api/public/appointments", false},
-		{http.MethodGet, "/api/public/orders/ABC-1", false},
-		{http.MethodGet, "/api/public/orders/ABC-1/invoice", false},
+		{http.MethodGet, "/api/public/orders/ABC-1", true},
+		{http.MethodGet, "/api/public/orders/ABC-1/invoice", true},
 		{http.MethodPost, "/api/workshop/login", false},
 		{http.MethodGet, "/api/workshop/orders", false},
 		{http.MethodGet, "/api/workshop/orders/ABC-1", true},
@@ -139,6 +148,9 @@ func TestStubRoutesAreWired(t *testing.T) {
 		}
 		if rec.Code == http.StatusMethodNotAllowed {
 			t.Errorf("%s %s returned 405 — wrong verb registered", tc.method, tc.path)
+		}
+		if rec.Code == http.StatusNotFound && rec.Body.String() == fallthroughBody {
+			t.Errorf("%s %s fell through to the catch-all — route is not wired", tc.method, tc.path)
 		}
 	}
 }

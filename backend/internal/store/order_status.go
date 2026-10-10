@@ -105,10 +105,10 @@ func (s *Store) TransitionOrderStatus(ctx context.Context, orderNumber, newStatu
 }
 
 // statusHistory reads the append-only history of an order in chronological
-// order. It runs inside the caller's transaction so it sees the row just
-// appended.
-func statusHistory(ctx context.Context, tx pgx.Tx, orderID int64) ([]model.StatusEvent, error) {
-	rows, err := tx.Query(ctx, `
+// order. It runs on the caller's queryer (a transaction or the pool) so it sees
+// the row just appended when called inside a transition.
+func statusHistory(ctx context.Context, q queryer, orderID int64) ([]model.StatusEvent, error) {
+	rows, err := q.Query(ctx, `
 		SELECT status, changed_at
 		  FROM order_status_history
 		 WHERE order_id = $1
