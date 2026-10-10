@@ -7,11 +7,18 @@ import (
 	"context"
 	"errors"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // ErrNotImplemented is returned by the stub methods the feature tickets fill in.
 var ErrNotImplemented = errors.New("not_implemented")
+
+// queryer is the read subset shared by a pgx transaction and a pgx pool, so a
+// query helper can run either inside a transaction or directly on the pool.
+type queryer interface {
+	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
+}
 
 // Store provides access to the workshop database.
 type Store struct {
