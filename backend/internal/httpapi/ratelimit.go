@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"strings"
 	"sync"
 	"time"
 )
@@ -42,5 +43,20 @@ func (rl *RateLimiter) Allow(key string) bool {
 		return false
 	}
 	rl.hits[key] = append(kept, now)
+	return true
+}
+
+// AllowLogin records one sign-in attempt for the client's IP and, when present,
+// its e-mail, and reports whether both are still within the limit (AC-29). When
+// the IP is already over the limit the e-mail slot is left untouched.
+func (rl *RateLimiter) AllowLogin(ip, email string) bool {
+	ip = strings.TrimSpace(ip)
+	if ip != "" && !rl.Allow("ip:"+ip) {
+		return false
+	}
+	email = strings.ToLower(strings.TrimSpace(email))
+	if email != "" && !rl.Allow("email:"+email) {
+		return false
+	}
 	return true
 }
