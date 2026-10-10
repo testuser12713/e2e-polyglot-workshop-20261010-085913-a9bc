@@ -129,7 +129,7 @@
     },
     {
       "name": "worker",
-      "dir": ".",
+      "dir": "worker",
       "stack": "python",
       "kind": "worker",
       "install": [
@@ -145,8 +145,7 @@
       ],
       "start": [
         "${python}",
-        "-m",
-        "worker.main"
+        "run.py"
       ],
       "ready_log": "worker ready",
       "depends_on": [
