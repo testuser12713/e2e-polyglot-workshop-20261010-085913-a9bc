@@ -12,11 +12,16 @@ interface. This module owns the delivery mechanics of reliable consumption:
 * A permanently failing message is retried up to ``max_deliveries`` times and
   then moved to the dead-letter stream instead of looping forever.
 
+The number of deliveries is kept in a Valkey hash (one field per message id,
+bumped with ``HINCRBY``), never as a decimal carried inside the message payload.
+
 The module is deliberately free of invoice arithmetic: it only moves and
 accounts messages.
 """
 
 import logging
+import os
+import socket
 from collections.abc import Callable
 from typing import Any
 
@@ -48,15 +53,20 @@ logger = logging.getLogger(__name__)
 Message = tuple[str, dict[str, Any]]
 
 
+def default_consumer_name() -> str:
+    """Return the per-process consumer name (host and pid)."""
+    return f"{socket.gethostname()}-{os.getpid()}"
+
+
 class Queue:
     """A Valkey stream consumer bound to one stream, group and consumer name."""
 
     def __init__(
         self,
         url: str,
-        stream: str,
-        group: str,
-        consumer: str,
+        stream: str = INVOICE_STREAM,
+        group: str = INVOICE_GROUP,
+        consumer: str | None = None,
         dead_letter_stream: str = INVOICE_DEAD_LETTER_STREAM,
         max_deliveries: int = MAX_DELIVERIES,
         read_count: int = 10,
@@ -66,12 +76,14 @@ class Queue:
         self.url = url
         self.stream = stream
         self.group = group
-        self.consumer = consumer
+        self.consumer = consumer or default_consumer_name()
         self.dead_letter_stream = dead_letter_stream
         self.max_deliveries = max_deliveries
         self.read_count = read_count
         self.read_block_ms = read_block_ms
         self.claim_min_idle_ms = claim_min_idle_ms
+        # The delivery counter lives in a hash, one field per message id.
+        self.delivery_key = f"{stream}:deliveries"
         # Keep the socket read timeout strictly longer than the blocking read's
         # block time, so idling in the consume loop is not mistaken for a dead
         # connection. A block time of 0 means "block forever", in which case the
@@ -130,6 +142,10 @@ class Queue:
         Args:
             count: maximum number of messages to read.
             block_ms: how long to wait for a message; ``None`` returns at once.
+
+        The read returns an empty list when the block elapses on an idle stream;
+        it does not raise, because the client's socket timeout outlives the
+        server-side block (see ``__init__``).
         """
         if count is None:
             count = self.read_count
@@ -154,22 +170,56 @@ class Queue:
         """Reclaim pending messages whose consumer died before acking them.
 
         Uses ``XAUTOCLAIM`` so a restarted worker takes over the messages that
-        its predecessor left pending, so nothing is lost.
+        its predecessor left pending, so nothing is lost. On a server that does
+        not know ``XAUTOCLAIM`` it falls back to ``XPENDING`` + ``XCLAIM``.
         """
         if min_idle_ms is None:
             min_idle_ms = self.claim_min_idle_ms
         if count is None:
             count = self.read_count
-        result = self.client.xautoclaim(
+        try:
+            result = self.client.xautoclaim(
+                self.stream,
+                self.group,
+                self.consumer,
+                min_idle_time=min_idle_ms,
+                start_id=start_id,
+                count=count,
+            )
+        except (ResponseError, AttributeError):
+            return self._claim_fallback(min_idle_ms, count, start_id)
+        messages = result[1] if len(result) >= 2 else []
+        return [(message_id, fields) for message_id, fields in messages]
+
+    def _claim_fallback(
+        self,
+        min_idle_ms: int,
+        count: int,
+        start_id: str,
+    ) -> list[Message]:
+        """Reclaim via ``XPENDING`` + ``XCLAIM`` for servers without XAUTOCLAIM."""
+        pending = self.client.xpending_range(
+            self.stream,
+            self.group,
+            min=start_id,
+            max="+",
+            count=count,
+        )
+        message_ids = [
+            entry["message_id"]
+            for entry in pending
+            if int(entry["time_since_delivered"]) >= min_idle_ms
+        ]
+        if not message_ids:
+            return []
+        claimed = self.client.xclaim(
             self.stream,
             self.group,
             self.consumer,
-            min_idle_time=min_idle_ms,
-            start_id=start_id,
-            count=count,
+            min_idle_ms,
+            message_ids,
         )
-        messages = result[1] if len(result) >= 2 else []
-        return [(message_id, fields) for message_id, fields in messages]
+        return [(message_id, fields) for message_id, fields in claimed]
 
     def process(
         self,
@@ -179,15 +229,16 @@ class Queue:
     ) -> None:
         """Dispatch one message and account for its outcome.
 
-        On success the message is acknowledged. On failure it stays pending so
-        it is reclaimed and retried, until it has been delivered
+        The delivery counter is bumped before the handler runs. On success the
+        message is acknowledged and its counter cleared. On failure it stays
+        pending so it is reclaimed and retried, until it has been delivered
         ``max_deliveries`` times, at which point it is moved to the dead-letter
         stream and removed from the pending list.
         """
+        attempts = self.bump_delivery_count(message_id)
         try:
             handler(payload)
         except Exception:
-            attempts = self.delivery_count(message_id)
             if attempts >= self.max_deliveries:
                 self.to_dead_letter(message_id, payload)
             else:
@@ -200,22 +251,22 @@ class Queue:
         else:
             self.ack(message_id)
 
-    def delivery_count(self, message_id: str) -> int:
-        """Return how often ``message_id`` has been delivered so far.
+    def bump_delivery_count(self, message_id: str) -> int:
+        """Increment and return how often ``message_id`` has been delivered."""
+        return int(self.client.hincrby(self.delivery_key, message_id, 1))
 
-        The count lives in Valkey's own pending-entries table; it is 1 for a
-        freshly read message and grows with every reclaim.
-        """
-        entries = self.client.xpending_range(self.stream, self.group, message_id, message_id, 1)
-        if not entries:
-            return 0
-        return int(entries[0]["times_delivered"])
+    def delivery_count(self, message_id: str) -> int:
+        """Return how often ``message_id`` has been delivered so far."""
+        value = self.client.hget(self.delivery_key, message_id)
+        return int(value) if value is not None else 0
 
     def ack(self, message_id: str) -> int:
         """Acknowledge a message that was processed successfully.
 
-        Called only after the handler returned without raising.
+        Called only after the handler returned without raising. The delivery
+        counter is cleared, so a message id is never accounted twice.
         """
+        self.client.hdel(self.delivery_key, message_id)
         return int(self.client.xack(self.stream, self.group, message_id))
 
     def to_dead_letter(self, message_id: str, payload: dict[str, Any]) -> str:

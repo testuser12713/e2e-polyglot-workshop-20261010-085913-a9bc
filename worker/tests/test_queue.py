@@ -12,6 +12,7 @@ from typing import Any
 from uuid import uuid4
 
 import pytest
+from redis.exceptions import ResponseError
 
 from worker.queue import MAX_DELIVERIES, Queue
 
@@ -39,13 +40,47 @@ def queue(valkey_url: str) -> Iterator[Queue]:
 
 
 def _drop(instance: Queue, stream: str, dead_letter_stream: str) -> None:
-    instance.client.delete(stream, dead_letter_stream)
+    instance.client.delete(stream, dead_letter_stream, instance.delivery_key)
 
 
 def test_ensure_group_is_idempotent(queue: Queue) -> None:
     """Creating the group twice is tolerated (the second answers BUSYGROUP)."""
     queue.ensure_group()
     queue.ensure_group()
+
+
+def test_delivery_counter_is_a_hash_field(queue: Queue) -> None:
+    """The delivery count is a hash field bumped with HINCRBY, not in the payload."""
+    queue.ensure_group()
+    queue.client.xadd(queue.stream, PAYLOAD)
+    delivered = queue.read_new(count=10)
+    assert len(delivered) == 1
+    message_id, payload = delivered[0]
+
+    assert queue.bump_delivery_count(message_id) == 1
+    assert queue.bump_delivery_count(message_id) == 2
+    assert queue.delivery_count(message_id) == 2
+    assert queue.client.hget(queue.delivery_key, message_id) == "2"
+    # The counter never travels inside the message body.
+    assert "delivery_count" not in payload
+    assert "attempts" not in payload
+
+
+def test_claim_falls_back_to_xclaim(queue: Queue, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A server without XAUTOCLAIM is handled with XPENDING + XCLAIM."""
+    queue.ensure_group()
+    queue.client.xadd(queue.stream, PAYLOAD)
+    delivered = queue.read_new(count=10)
+    assert len(delivered) == 1
+    message_id, payload = delivered[0]
+
+    def unsupported(*args: Any, **kwargs: Any) -> Any:
+        raise ResponseError("ERR unknown command 'XAUTOCLAIM'")
+
+    monkeypatch.setattr(queue.client, "xautoclaim", unsupported)
+    reclaimed = queue.claim(min_idle_ms=0, count=10)
+
+    assert reclaimed == [(message_id, payload)]
 
 
 def test_successful_message_is_acknowledged(queue: Queue) -> None:
