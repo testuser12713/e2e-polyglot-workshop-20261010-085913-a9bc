@@ -9,6 +9,13 @@ import (
 	valkey "github.com/valkey-io/valkey-go"
 )
 
+// Stream entry fields of an invoice message. The payload is
+// {order_number, plate}.
+const (
+	fieldOrderNumber = "order_number"
+	fieldPlate       = "plate"
+)
+
 // InvoiceStream is the Valkey stream the invoice worker consumes.
 const InvoiceStream = "workshop:invoices"
 
@@ -42,7 +49,18 @@ func (p *Publisher) Close() {
 }
 
 // PublishInvoice appends one message with the order number and plate to the
-// invoice stream (AC-07). The status ticket implements the body.
+// invoice stream (AC-07). It returns an error when Valkey rejects the command
+// so the caller can roll the status transition back.
 func (p *Publisher) PublishInvoice(ctx context.Context, orderNumber, plate string) error {
-	return ErrNotImplemented
+	if p == nil || p.client == nil {
+		return errors.New("invoice publisher is not configured")
+	}
+	cmd := p.client.B().Xadd().
+		Key(InvoiceStream).
+		Id("*").
+		FieldValue().
+		FieldValue(fieldOrderNumber, orderNumber).
+		FieldValue(fieldPlate, plate).
+		Build()
+	return p.client.Do(ctx, cmd).Error()
 }
